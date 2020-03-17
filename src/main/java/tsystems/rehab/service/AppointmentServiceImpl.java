@@ -32,8 +32,12 @@ public class AppointmentServiceImpl implements AppointmentService{
 	public void save(Appointment appnt, long patientId) {
 		Patient patient = patientDAO.get(patientId);
 		appnt.setPatient(patient);
-		patient.add(appnt);
 		appointmentDAO.save(appnt);
+	}
+
+	@Override
+	public List<Appointment> getByPatientId(long id) {
+		return appointmentDAO.getByPatientId(id);
 	}
 
 }

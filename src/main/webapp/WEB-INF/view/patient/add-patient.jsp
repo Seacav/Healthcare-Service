@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8" isELIgnored="false"%>
+    pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>    
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%> 
 <!DOCTYPE html>
@@ -14,7 +14,6 @@
 	<h3>Please enter insurance number</h3>
 	<form:form method="POST" action="add-patient">
 		<input type="text" name="insNumber" id="ins"/><br><br>
-		<input type="text" name="cyrillic" id="ins"/><br><br>
 		<input type="submit" value="Submit" id="submit-button"/>
 	</form:form>
 </c:if>

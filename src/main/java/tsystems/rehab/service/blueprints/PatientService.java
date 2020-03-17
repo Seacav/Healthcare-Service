@@ -2,16 +2,14 @@ package tsystems.rehab.service.blueprints;
 
 import java.util.List;
 
-import tsystems.rehab.entity.Patient;
+import tsystems.rehab.dto.PatientDto;
 
 public interface PatientService {
-	List<Patient> list();
+	List<PatientDto> listOfDoctor(String doctorName);
 	
-	List<Patient> listOfDoctor(String doctorName);
+	void save(PatientDto patient);
 	
-	void save(Patient patient);
+	PatientDto get(long id);
 	
-	Patient get(long id);
-	
-	Patient getByInsurance(String insNumber);
+	PatientDto getByInsurance(String insNumber);
 }

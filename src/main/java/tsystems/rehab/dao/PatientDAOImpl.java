@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.TypedQuery;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -37,20 +38,21 @@ public class PatientDAOImpl implements PatientDAO{
 	@Override
 	public List<Patient> getByInsurance(String insNumber) {
 		@SuppressWarnings("unchecked")
-		TypedQuery<Patient> query = 
-				sessionFactory.getCurrentSession()
-				.createSQLQuery("select * from Patient as p where p.ins_number='"+insNumber+"'").addEntity(Patient.class);
-		return query.getResultList();
+		NativeQuery<Patient> sqlQuery = sessionFactory.getCurrentSession()
+				.createSQLQuery("select * from Patient as p where p.ins_number=:ins");
+		sqlQuery.setParameter("ins", insNumber);
+		sqlQuery.addEntity(Patient.class);
+		return sqlQuery.getResultList();
 	}
 
 	@Override
 	public List<Patient> getByDoctorName(String doctorName) {
 		@SuppressWarnings("unchecked")
-		TypedQuery<Patient> query = 
-				sessionFactory.getCurrentSession()
-				.createSQLQuery("select * from Patient as p where p.doctor_name='"+doctorName+"'")
-				.addEntity(Patient.class);
-		return query.getResultList();
+		NativeQuery<Patient> sqlQuery = sessionFactory.getCurrentSession()
+				.createSQLQuery("select * from Patient as p where p.doctor_name=:name");
+		sqlQuery.setParameter("name", doctorName);
+		sqlQuery.addEntity(Patient.class);
+		return sqlQuery.getResultList();
 	}
 	
 }

@@ -8,6 +8,8 @@ public interface AppointmentService {
 	
 	List<Appointment> list();
 	
+	List<Appointment> getByPatientId(long id);
+	
 	void save(Appointment appnt, long patientId);
 
 }

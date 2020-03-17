@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -26,19 +27,31 @@ public class Appointment {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id")
-	private long id;
+	private Long id;
 	
 	@ManyToOne
 	@JoinColumn(name="patient_id")
 	private Patient patient;
 	
-	@Column(name="drug_name")
-	private String drug_name;
+	@OneToOne
+	@JoinColumn(name="treatment_id")
+	private Treatment treatmentId;
+	
+	@Column(name="pattern_days")
+	private String pattern;
+	
+	@Column(name="receipt_times")
+	private String receiptTimes;
+	
+	@Column(name="dosage")
+	private String dosage;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="created_at")
 	private Date created_at;
 	
-	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="due_date")
+	private Date dueDate;
 	
 }

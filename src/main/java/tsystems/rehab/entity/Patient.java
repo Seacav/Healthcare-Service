@@ -1,15 +1,10 @@
 package tsystems.rehab.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -27,7 +22,7 @@ public class Patient {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id")
-	private long id;
+	private Long id;
 	
 	@Column(name="first_name")
 	private String firstName;
@@ -46,8 +41,8 @@ public class Patient {
 	
 	@Column(name="status")
 	private String status;
-	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "patient")
+	/*
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "patient")
 	private List<Appointment> appointments;
 	
 	public void add(Appointment appointment) {
@@ -57,5 +52,6 @@ public class Patient {
 		appointments.add(appointment);
 		appointment.setPatient(this);
 	}
+	*/
 	
 }
