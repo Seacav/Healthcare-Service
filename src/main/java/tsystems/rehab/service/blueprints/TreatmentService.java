@@ -8,4 +8,5 @@ public interface TreatmentService {
 
 	List<TreatmentDto> findByTypeAndName(String type, String name);
 	
+	TreatmentDto getById(Long id);
 }

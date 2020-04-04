@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import tsystems.rehab.dto.PatientDto;
-import tsystems.rehab.entity.Patient;
-import tsystems.rehab.service.blueprints.AppointmentService;
 import tsystems.rehab.service.blueprints.PatientService;
 
 @Controller
@@ -24,9 +22,6 @@ public class PatientController {
 	@Autowired
 	private PatientService patientService;
 	
-	@Autowired
-	private AppointmentService appointmentService;
-
 	@GetMapping("/*")
 	public String viewHome(Model model, Principal principal) {
 		model.addAttribute("patients", patientService.listOfDoctor(principal.getName()));
@@ -53,6 +48,26 @@ public class PatientController {
 		model.addAttribute("patient", patient);
 		model.addAttribute("insNumber", insNumber);
 		return "patient/patient-form";
+	}
+	
+	@PostMapping("/addExistingPatient")
+	public String addExistingPatient(@RequestParam("id") long id,
+			@ModelAttribute("diagnosis") String diagnosis,
+			Principal principal) {
+		PatientDto patient = patientService.get(id);
+		patient.setDoctorName(principal.getName());
+		patient.setDiagnosis(diagnosis);
+		patient.setStatus("TREATED");
+		patientService.save(patient);
+		return "redirect:/doctor/";
+	}
+	
+	@PostMapping("/dischargePatient")
+	public String dischargePatient(@RequestParam("patientId") long id) {
+		PatientDto patient = patientService.get(id);
+		patient.setStatus("DISCHARGED");
+		patientService.save(patient);
+		return "redirect:/doctor/";
 	}
 	
 	@PostMapping("/process-form")

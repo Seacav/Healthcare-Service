@@ -1,23 +1,24 @@
 package tsystems.rehab.dto;
 
 import java.util.Date;
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppointmentDto {
+@ToString
+@Builder
+public class EventDto {
 
 	private Long id;
-	private PatientDto patient;
-	private TreatmentDto treatment;
-	private String pattern;
-	private String receiptTimes;
-	private String dosage;
+	private AppointmentDto appointment;
 	private String status;
-	private Date created_at;
-	private Date dueDate;
+	private String commentary;
+	private Date date;
 
 }

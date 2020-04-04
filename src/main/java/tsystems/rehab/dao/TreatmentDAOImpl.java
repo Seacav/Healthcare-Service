@@ -18,12 +18,23 @@ public class TreatmentDAOImpl implements TreatmentDAO{
 
 	@Override
 	public List<Treatment> findByTypeAndName(String type, String name) {
-		NativeQuery sqlQuery = sessionFactory.getCurrentSession()
-				.createSQLQuery("select * from treatment as t where t.type=:type and t.name like :name");
-		sqlQuery.setParameter("type", type);
-		sqlQuery.setParameter("name", "%"+name+"%");
-		sqlQuery.addEntity(Treatment.class);
+		@SuppressWarnings("unchecked")
+		NativeQuery<Treatment> sqlQuery = sessionFactory.getCurrentSession()
+				.createSQLQuery("select * from treatment as t where t.type=:type and t.name like :name")
+				.addEntity(Treatment.class)
+				.setParameter("type", type)
+				.setParameter("name", "%"+name+"%");
 		return sqlQuery.getResultList();
+	}
+
+	@Override
+	public Treatment getById(Long id) {
+		@SuppressWarnings("unchecked")
+		NativeQuery<Treatment> sqlQuery = sessionFactory.getCurrentSession()
+				.createSQLQuery("select * from treatment as t where t.id=:id")
+				.addEntity(Treatment.class)
+				.setParameter("id", id);
+		return (Treatment) sqlQuery.getSingleResult();
 	}
 
 }

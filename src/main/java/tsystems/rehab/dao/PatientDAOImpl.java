@@ -27,7 +27,7 @@ public class PatientDAOImpl implements PatientDAO{
 
 	@Override
 	public void save(Patient patient) {
-		sessionFactory.getCurrentSession().save(patient);
+		sessionFactory.getCurrentSession().saveOrUpdate(patient);;
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class PatientDAOImpl implements PatientDAO{
 	public List<Patient> getByDoctorName(String doctorName) {
 		@SuppressWarnings("unchecked")
 		NativeQuery<Patient> sqlQuery = sessionFactory.getCurrentSession()
-				.createSQLQuery("select * from Patient as p where p.doctor_name=:name");
+				.createSQLQuery("select * from Patient as p where p.doctor_name=:name and p.status='TREATED'");
 		sqlQuery.setParameter("name", doctorName);
 		sqlQuery.addEntity(Patient.class);
 		return sqlQuery.getResultList();

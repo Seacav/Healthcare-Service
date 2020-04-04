@@ -26,7 +26,8 @@
 		</c:when>
 		<c:when test="${searchSuccess eq true }">
 			<c:forEach items="${treatments}" var="treatment">
-				<a href="<c:url value="addAppointment/showForm?patientId=${patientId}&treatmentId=${treatment.id}"/>">${treatment.name}</a><br> 
+				<a href="<c:url value="addAppointment/showForm?patientId=${patientId}&treatmentId=${treatment.id}&isDrug=${treatment.type eq 'DRUG'}"/>">
+					${treatment.name}</a><br> 
 			</c:forEach>
 		</c:when>
 	</c:choose>

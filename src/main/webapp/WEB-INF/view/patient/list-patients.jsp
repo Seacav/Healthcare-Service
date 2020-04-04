@@ -17,7 +17,7 @@
 <c:if test="${!empty patients}">
 	<c:forEach items="${patients}" var="patient">
 		<a href="<c:url value="list-appointments?id=${patient.id}"/>">
-		  ${patient.firstName} ${patient.lastName}
+		  ${patient.lastName} ${patient.firstName}
 		</a><br>
 	</c:forEach>
 </c:if>

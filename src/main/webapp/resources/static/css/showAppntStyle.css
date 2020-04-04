@@ -1,0 +1,74 @@
+body {
+    font-family: sans-serif;
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    padding-top: 100px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    position: relative; 
+    background-color: #fefefe;
+    margin: auto; 
+    padding: 0;
+    border: 1px solid #888;
+    width: 30%;
+}
+
+.close {
+    color: black;
+    float: right;
+    border-radius: 4px;
+    line-height: 1;
+    cursor: pointer;
+    text-align: center;
+    width: 26px;
+    font-size: 26px;
+    font-weight: bold;
+    background-color: lightgray;
+}
+
+.close:hover {
+    background-color: darkgray;
+}
+
+.modal-header {
+    padding: 2px 2px 4px 16px;
+    background-color: #f4dada;
+    color: black;
+}
+  
+.modal-body {
+    padding: 16px 16px;
+    background-color:#37495d;
+}
+
+.deleteEvent {
+	background-color: transparent;
+	border: none;
+	color: black;
+	padding: 3px 6px;
+	font-size: 20px;
+	cursor: pointer;
+}
+
+.deleteEvent:hover {
+	color: gray;
+}
+
+#dates #firstTimestamp {
+    display: inline-block;
+}
+
+#dates > .date{
+    display: block;
+    margin-top: 7px;
+    margin-bottom: 7px;
+}

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import tsystems.rehab.dao.blueprints.AppointmentDAO;
 import tsystems.rehab.entity.Appointment;
-import tsystems.rehab.entity.Patient;
 
 @Repository
 public class AppointmentDAOImpl implements AppointmentDAO{
@@ -28,8 +27,9 @@ public class AppointmentDAOImpl implements AppointmentDAO{
 	
 	@Override
 	public List<Appointment> getByPatientId(long id) {
-		NativeQuery sqlQuery = sessionFactory.getCurrentSession()
-				.createSQLQuery("select * from Appointment as a where a.patient_id=:id");
+		@SuppressWarnings("unchecked")
+		NativeQuery<Appointment> sqlQuery = sessionFactory.getCurrentSession()
+				.createSQLQuery("select * from Appointment as a where a.patient_id=:id and a.status='VALID'");
 		sqlQuery.setParameter("id", id);
 		sqlQuery.addEntity(Appointment.class);
 		return sqlQuery.getResultList();
@@ -37,7 +37,23 @@ public class AppointmentDAOImpl implements AppointmentDAO{
 
 	@Override
 	public void save(Appointment appnt) {
-		sessionFactory.getCurrentSession().save(appnt);
+		sessionFactory.getCurrentSession().saveOrUpdate(appnt);
+	}
+
+	@Override
+	public Appointment saveAndReturn(Appointment appnt) {
+		sessionFactory.getCurrentSession().saveOrUpdate(appnt);
+		return appnt;
+	}
+
+	@Override
+	public Appointment getById(long id) {
+		@SuppressWarnings("unchecked")
+		NativeQuery<Appointment> sqlQuery = sessionFactory.getCurrentSession()
+				.createSQLQuery("select * from appointment as a where a.id=:id")
+				.setParameter("id", id)
+				.addEntity(Appointment.class);
+		return sqlQuery.getSingleResult();
 	}
 
 }

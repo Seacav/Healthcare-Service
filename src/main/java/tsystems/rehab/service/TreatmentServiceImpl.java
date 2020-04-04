@@ -28,4 +28,9 @@ public class TreatmentServiceImpl implements TreatmentService{
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public TreatmentDto getById(Long id) {
+		return mapper.toDto(treatmentDAO.getById(id));
+	}
+
 }

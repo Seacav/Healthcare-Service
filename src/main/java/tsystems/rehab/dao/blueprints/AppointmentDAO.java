@@ -10,4 +10,8 @@ public interface AppointmentDAO {
 	List<Appointment> getByPatientId(long id);
 	
 	void save(Appointment appnt);
+	
+	Appointment saveAndReturn(Appointment appnt);
+	
+	Appointment getById(long id);
 }

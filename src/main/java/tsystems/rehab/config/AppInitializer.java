@@ -36,8 +36,6 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
 		/*
 		filterRegistration = servletContext.addFilter("hiddenHttpMethodFilter", new HiddenHttpMethodFilter() );
 		filterRegistration.addMappingForUrlPatterns(null, false, "/*");
-		
-		servletContext.addFilter("characterEncodingFilter", new CharacterEncodingFilter("UTF-8", true, true));
 		*/
 	    super.onStartup(servletContext);
 	}

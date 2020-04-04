@@ -20,7 +20,9 @@ public class UserDAOImpl implements UserDAO{
 		@SuppressWarnings("unchecked")
 		TypedQuery<User> query = 
 				sessionFactory.getCurrentSession()
-				.createSQLQuery("select * from user where user.username='"+username+"'").addEntity(User.class);
+				.createSQLQuery("select * from user where user.username=:uname")
+				.setParameter("uname", username)
+				.addEntity(User.class);
 		return query.getResultList().get(0);
 	}
 

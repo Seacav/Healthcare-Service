@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -17,12 +16,14 @@ import javax.persistence.TemporalType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Table(name="appointment")
+@Table(name="event")
 @NoArgsConstructor
 @Getter @Setter
-public class Appointment {
+@ToString
+public class Event {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -30,31 +31,16 @@ public class Appointment {
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name="patient_id")
-	private Patient patient;
-	
-	@OneToOne
-	@JoinColumn(name="treatment_id")
-	private Treatment treatment;
-	
-	@Column(name="pattern_days")
-	private String pattern;
-	
-	@Column(name="receipt_times")
-	private String receiptTimes;
-	
-	@Column(name="dosage")
-	private String dosage;
+	@JoinColumn(name="appointment_id")
+	private Appointment appointment;
 	
 	@Column(name="status")
 	private String status;
 	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="created_at")
-	private Date created_at;
+	@Column(name="commentary")
+	private String commentary;
 	
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="due_date")
-	private Date dueDate;
-	
+	@Column(name="date")
+	private Date date;
 }

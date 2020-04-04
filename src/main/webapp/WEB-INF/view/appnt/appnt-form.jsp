@@ -12,34 +12,41 @@
 <body>
 <h2>Appointment form</h2>
 <form:form action="processForm" method="POST" modelAttribute="eventGenerator">
+	<input type="hidden" name="patientId" value="${eventGenerator.patientId }"/>
+	<input type="hidden" name="treatmentId" value="${eventGenerator.treatmentId }"/>
 	<div class="weekdays">
-	    <input type="checkbox" name="days" value="Mo" id="mon" class="day"/>
+	    <input type="checkbox" name="days" value="0" id="mon" class="day"/>
 	    <label for="mon">ПН</label>
 	    
-	    <input type="checkbox" name="days" value="Tu" id="tue" class="day"/>
+	    <input type="checkbox" name="days" value="1" id="tue" class="day"/>
 	    <label for="tue">ВТ</label>
 	    
-	    <input type="checkbox" name="days" value="We" id="wed" class="day"/>
+	    <input type="checkbox" name="days" value="2" id="wed" class="day"/>
 	    <label for="wed">СР</label>
 	    
-	    <input type="checkbox" name="days" value="Th" id="thu" class="day"/>
+	    <input type="checkbox" name="days" value="3" id="thu" class="day"/>
 	    <label for="thu">ЧТ</label>
 	    
-	    <input type="checkbox" name="days" value="Fr" id="fri" class="day"/>
+	    <input type="checkbox" name="days" value="4" id="fri" class="day"/>
 	    <label for="fri">ПТ</label>
 	    
-	    <input type="checkbox" name="days" value="Sa" id="sat" class="day"/>
+	    <input type="checkbox" name="days" value="5" id="sat" class="day"/>
 	    <label for="sat">СБ</label>
 	    
-	    <input type="checkbox" name="days" value="Su" id="sun" class="day"/>
+	    <input type="checkbox" name="days" value="6" id="sun" class="day"/>
 	    <label for="sun">ВС</label>
 	</div>
  	<a>Choose time:</a>
 	<div id="dates">
 	    <div id="firstTimestamp">
-	        <input type="time" name="treatTime[0]" id="date"/>
+	        <input type="time" name="treatTime" id="date"/>
 	        <input type="button" value="Add new time" id='addTime'/>
 	    </div>
+	</div>
+	<div>
+		<c:if test="${isDrug}">
+			Enter dosage: <input type="text" name="dosage"/><br>
+		</c:if>
 	</div>
 	<div>
 	    <a>Choose duration:</a>
@@ -50,6 +57,8 @@
 	        <option value="4">4 недели</option>
 	    </select>
 	</div>
+	<input type="checkbox" name="startNextWeek" id="startNext" />
+	<label for="startNext">Start from next week?</label>
 	<input type="submit" value="Submit">
 	<script src="<c:url value="/resources/static/js/appntFormScript.js"/>"></script>
 </form:form>

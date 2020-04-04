@@ -6,6 +6,8 @@ import tsystems.rehab.entity.Treatment;
 
 public interface TreatmentDAO {
 
-	public List<Treatment> findByTypeAndName(String type, String name);
+	List<Treatment> findByTypeAndName(String type, String name);
+	
+	Treatment getById(Long id);
 	
 }

@@ -7,8 +7,11 @@ import lombok.Data;
 @Data
 public class EventGeneratorDto {
 
-	private List<String> days;
+	private Long patientId;
+	private Long treatmentId;
+	private List<Integer> days;
 	private List<String> treatTime;
-	private String duration;
-	
+	private String dosage;
+	private Integer duration;
+	private boolean startNextWeek;
 }

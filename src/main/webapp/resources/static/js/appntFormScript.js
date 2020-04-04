@@ -6,7 +6,7 @@ addTimeButton.addEventListener('click', function (e) {
     const dateDiv = document.createElement('div');
     dateDiv.className = "date";
     const dateEl = document.createElement('input');
-    dateEl.name = 'treatTime['+counter+']'
+    dateEl.name = 'treatTime';
     dateEl.type = 'time';
 
     const delButton = document.createElement('button');

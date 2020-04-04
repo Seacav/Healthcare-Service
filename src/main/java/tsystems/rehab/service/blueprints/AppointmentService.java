@@ -2,14 +2,20 @@ package tsystems.rehab.service.blueprints;
 
 import java.util.List;
 
+import tsystems.rehab.dto.AppointmentDto;
+import tsystems.rehab.dto.EventGeneratorDto;
 import tsystems.rehab.entity.Appointment;
 
 public interface AppointmentService {
 	
-	List<Appointment> list();
+	List<AppointmentDto> getByPatientId(long id);
 	
-	List<Appointment> getByPatientId(long id);
+	AppointmentDto getById(long id);
 	
-	void save(Appointment appnt, long patientId);
+	void save(AppointmentDto appnt);
+	
+	AppointmentDto saveAndReturn(AppointmentDto appnt);
+	
+	AppointmentDto generateAppointmentDto(EventGeneratorDto eGen);
 
 }

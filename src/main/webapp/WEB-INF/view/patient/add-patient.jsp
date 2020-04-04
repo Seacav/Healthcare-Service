@@ -26,7 +26,11 @@
 	<p>Insurance number: ${patient.insNumber}</p>
 	<c:choose>
 		<c:when test="${patient.status eq 'DISCHARGED' }">
-			<a href="<c:url value="doctor/addExistingPatient?id=${patient.id}"/>">Add</a>
+			<form:form method="POST" action="addExistingPatient?id=${patient.id}">
+				Enter patient's diagnosis:
+				<input type="text" name="diagnosis"/>
+				<input type="submit" value="Add patient">
+			</form:form>
 		</c:when>
 		<c:when test="${patient.status eq 'TREATED'}">
 			Sorry, this user is already assigned to a therapist.
