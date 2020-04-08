@@ -53,6 +53,7 @@ public class AppointmentServiceImpl implements AppointmentService{
 	//Sets all fields except 'patient' and 'treatment'
 	@Override
 	public AppointmentDto generateAppointmentDto(EventGeneratorDto eGen) {
+		/*
 		AppointmentDto appnt = new AppointmentDto();
 		
 		TemporalField field = WeekFields.of(Locale.FRANCE).dayOfWeek();
@@ -74,6 +75,23 @@ public class AppointmentServiceImpl implements AppointmentService{
 			dueDate = dueDate.plusWeeks(1);
 		
 		appnt.setDueDate(Timestamp.valueOf(dueDate));
+		return appnt;
+		*/
+		TemporalField field = WeekFields.of(Locale.FRANCE).dayOfWeek();
+		LocalDateTime dueDate = LocalDate.now().with(field, 1).atStartOfDay().plusWeeks(eGen.getDuration());
+		if (eGen.isStartNextWeek()) {
+			dueDate = dueDate.plusWeeks(1);
+		}
+		
+		AppointmentDto appnt = AppointmentDto.builder()
+				.pattern(eGen.getDays().stream().map(day -> day.toString()).collect(Collectors.joining(" ")))
+				.receiptTimes(eGen.getTreatTime().stream().collect(Collectors.joining(" ")))
+				.dosage(eGen.getDosage())
+				.status("VALID")
+				.created_at(new Date())
+				.dueDate(Timestamp.valueOf(dueDate))
+				.build();
+		
 		return appnt;
 	}
 	

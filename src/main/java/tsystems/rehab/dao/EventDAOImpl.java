@@ -69,7 +69,7 @@ public class EventDAOImpl implements EventDAO{
 	public List<Event> getByAppointmentId(long appointmentId) {
 		@SuppressWarnings("unchecked")
 		NativeQuery<Event> sqlQuery = sessionFactory.getCurrentSession()
-				.createSQLQuery("select * from event as e where e.appointment_id=:id")
+				.createSQLQuery("select * from event as e where e.appointment_id=:id order by e.date desc")
 				.addEntity(Event.class)
 				.setParameter("id", appointmentId);
 		return sqlQuery.getResultList();
@@ -117,7 +117,7 @@ public class EventDAOImpl implements EventDAO{
 				.createSQLQuery(startOfQuery + 
 						"inner join appointment on event.appointment_id=appointment.id " + 
 						"inner join patient on appointment.patient_id=patient.id " + 
-						"where patient.last_name like :name and event.date < :endTime " + 
+						"where appointment.status='VALID' and patient.last_name like :name and event.date < :endTime " + 
 						"and event.date > :startTime order by event.date asc " + limit)
 				.setParameter("name", "%"+patientName+"%");				
 		

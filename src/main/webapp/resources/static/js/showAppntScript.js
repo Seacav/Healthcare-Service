@@ -7,8 +7,10 @@ const showPtrnModal = document.getElementById('patternBtn');
 const closePtrnModal = document.getElementById('closePtrn');
 
 // Listeners for dosage modal box
-showDsgModal.onclick = function() {
-    modalDosage.style.display = 'block';
+if (showDsgModal !== null) {
+	showDsgModal.onclick = function() {
+	    modalDosage.style.display = 'block';
+	}
 }
 
 closeDsgModal.onclick = function() {
@@ -45,7 +47,8 @@ addTimeButton.addEventListener('click', function (e) {
     dateEl.name = 'treatTime[]';
 
     const delButton = document.createElement('button');
-    delButton.textContent = 'X';
+    delButton.innerHTML = '<i class="far fa-times-circle"></i>';
+    delButton.className = 'delButton';
     delButton.addEventListener('click', function(){
         dateDiv.parentNode.removeChild(dateDiv);
         counter -= 1;

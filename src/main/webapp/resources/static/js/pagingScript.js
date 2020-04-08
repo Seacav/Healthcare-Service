@@ -25,7 +25,11 @@ function template(data){
 		var date = moment(item.date);
 		$('<td>', {text: item.appointment.patient.lastName+' '+item.appointment.patient.firstName}).appendTo(tRow);
 		$('<td>', {text: item.appointment.patient.diagnosis}).appendTo(tRow);
-		$('<td>', {text: item.appointment.treatment.name+' '+item.appointment.dosage}).appendTo(tRow);
+		if (item.appointment.dosage===null){
+			$('<td>', {text: item.appointment.treatment.name}).appendTo(tRow);
+		} else {
+			$('<td>', {text: item.appointment.treatment.name+' '+item.appointment.dosage}).appendTo(tRow);
+		}
 		$('<td>', {text: item.status}).appendTo(tRow);
 		$('<td>', {text: date.format('HH:mm DD.MM.YY')}).appendTo(tRow);
 		if (item.status==='SCHEDULED'){

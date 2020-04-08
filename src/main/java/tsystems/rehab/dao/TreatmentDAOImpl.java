@@ -20,7 +20,7 @@ public class TreatmentDAOImpl implements TreatmentDAO{
 	public List<Treatment> findByTypeAndName(String type, String name) {
 		@SuppressWarnings("unchecked")
 		NativeQuery<Treatment> sqlQuery = sessionFactory.getCurrentSession()
-				.createSQLQuery("select * from treatment as t where t.type=:type and t.name like :name")
+				.createSQLQuery("select * from treatment as t where t.type=:type and t.name like :name order by t.name asc")
 				.addEntity(Treatment.class)
 				.setParameter("type", type)
 				.setParameter("name", "%"+name+"%");

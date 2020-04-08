@@ -17,13 +17,6 @@ public class AppointmentDAOImpl implements AppointmentDAO{
 	
 	@Autowired
 	private SessionFactory sessionFactory;
-
-	@Override
-	public List<Appointment> list() {
-		@SuppressWarnings("unchecked")
-		TypedQuery<Appointment> query = sessionFactory.getCurrentSession().createQuery("from Appointment");
-		return query.getResultList();
-	}
 	
 	@Override
 	public List<Appointment> getByPatientId(long id) {

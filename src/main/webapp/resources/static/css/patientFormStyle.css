@@ -1,0 +1,14 @@
+.wrapper {
+	padding-left: 15px;
+}
+
+.wrapper h2 {
+	text-align: center;
+}
+
+.wrapper input[type=text] {
+	border-radius: 5px;
+	border: 2px #079992 solid;
+	padding: 5px;
+	font-size: 14px;
+}

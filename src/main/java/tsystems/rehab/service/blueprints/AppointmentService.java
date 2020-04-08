@@ -17,5 +17,7 @@ public interface AppointmentService {
 	AppointmentDto saveAndReturn(AppointmentDto appnt);
 	
 	AppointmentDto generateAppointmentDto(EventGeneratorDto eGen);
+	
+	
 
 }

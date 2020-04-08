@@ -1,0 +1,31 @@
+.wrapper h2 {
+	text-align: center;
+}
+
+.wrapper a {
+	text-decoration: none;
+	color: black;
+	padding: 6px;
+	float:left;
+	clear: both;
+	border-radius: 5px;
+	font-size: 16px;
+	background-color: #dcdde1;
+	margin-left: 15px;
+	margin-top: 10px;
+}
+
+.wrapper a:hover {
+	background-color: #079992;
+	color: #f5f6fa;
+	transition: 0.3s;
+	cursor: pointer;
+}
+
+.wrapper #treatmentName {
+	border-radius: 5px;
+	border: 2px #079992 solid;
+	padding: 5px;
+	font-size: 14px;
+	margin-left: 15px;
+}

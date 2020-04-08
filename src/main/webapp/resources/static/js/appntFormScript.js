@@ -10,7 +10,8 @@ addTimeButton.addEventListener('click', function (e) {
     dateEl.type = 'time';
 
     const delButton = document.createElement('button');
-    delButton.textContent = 'X';
+    delButton.innerHTML = '<i class="far fa-times-circle"></i>';
+    delButton.className = 'delButton';
     delButton.addEventListener('click', function(){
         dateDiv.parentNode.removeChild(dateDiv);
         counter -= 1;

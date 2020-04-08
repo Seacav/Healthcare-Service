@@ -1,0 +1,51 @@
+html{ 
+	height:100%; 
+}
+
+body {
+	height:100%; 
+	padding:0; 
+	margin:0; 
+	font-family: sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.navbar {
+	overflow: hidden;
+	background-color: #38ada9;
+}
+
+.navbar a {
+	float: left;
+	display: block;
+	color: white;
+	text-align: center;
+	padding: 20px 20px;
+	font-size: 23px;
+	text-decoration: none;
+	width: 8%;
+}
+
+.navbar a:hover {
+	background-color: #ddd;
+	color: black;
+}
+
+.navbar .logout {
+	float: right;
+	padding: 19px;
+	width: 8%;
+	font-size: 23px;
+	border: none;
+	cursor: pointer;
+	background-color: #38ada9;
+	color: white;
+}
+
+.navbar .logout:hover {
+	background-color: #ddd;
+	color: black;
+}

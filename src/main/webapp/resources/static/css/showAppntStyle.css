@@ -1,6 +1,35 @@
 body {
     font-family: sans-serif;
 }
+
+.wrapper h2:first-child{
+	text-align: center;
+}
+
+.wrapper .info {
+	margin-left: 10px;
+}
+
+.wrapper .info .changeBtn, .cancelBtn{
+	border-radius: 5px;
+	background-color: #dcdde1;
+	border: none;
+	padding: 5px;
+	font-size: 16px;
+}
+
+.wrapper .info .changeBtn:hover, .cancelBtn:hover {
+	background-color: #079992;
+	color: #f5f6fa;
+	cursor: pointer;
+	color: white;
+	transition: 0.3s;
+}
+
+.wrapper .info .cancelBtn:hover {
+	background-color: #e74c3c;
+}
+
 .modal {
     display: none;
     position: fixed;
@@ -22,6 +51,13 @@ body {
     width: 30%;
 }
 
+.modal input[type=text] {
+	border-radius: 5px;
+	border: 2px #079992 solid;
+	padding: 5px;
+	font-size: 14px;
+}
+
 .close {
     color: black;
     float: right;
@@ -41,7 +77,7 @@ body {
 
 .modal-header {
     padding: 2px 2px 4px 16px;
-    background-color: #f4dada;
+    background-color: #079992;
     color: black;
 }
   
@@ -71,4 +107,47 @@ body {
     display: block;
     margin-top: 7px;
     margin-bottom: 7px;
+}
+
+input[type=time] {
+	background-color: #2ecc71;
+	border-radius: 13px;
+	border: none;
+	padding: 5px;
+	font-size: 16px;
+	margin-bottom: 5px;
+	font-weight: bold;
+	color: white;
+}
+
+.delButton {
+	margin-left: 3px;
+	background-color: transparent;
+	font-size: 16px;
+	color: white;
+	border: none;
+}
+
+.delButton:hover {
+	color: gray;
+	cursor: pointer;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+#eventsTable {
+	margin-left: 10px;
+	font-size: 16px;
+}
+
+#eventsTable th, td {
+	text-align: left;
+	padding: 12px;
+}
+
+table tr:nth-child(even) {
+  background-color: #95a5a6;
 }

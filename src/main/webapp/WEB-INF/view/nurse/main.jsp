@@ -15,11 +15,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>  
     <link rel="stylesheet" href="<c:url value="/resources/static/css/pagingStyle.css" />">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <link rel="stylesheet" href="<c:url value="/resources/static/css/tiles/navbarStyle.css" />">
 </head>
 <body>
-	<form:form action="${pageContext.request.contextPath}/logout" method="POST">
-		<input type="submit" value="Logout"/>
-	</form:form>
+	<div class="navbar">
+			<a href="${pageContext.request.contextPath}/nurse/"><i class="fas fa-home"></i></a>
+			<form:form action="${pageContext.request.contextPath}/logout" method="POST">
+				<button type="submit" class="logout"><i class="fas fa-door-open"></i></button>
+			</form:form>
+	</div>
     <div id="wrapper">
         <section>
         	<div id="filters">

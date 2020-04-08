@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -102,11 +103,6 @@ public class EventServiceImpl implements EventService{
 							.date(Timestamp.valueOf(eventDateTime))
 							.appointment(appointment)
 							.status("SCHEDULED").build();
-					/*
-					event.setDate(Timestamp.valueOf(eventDateTime));
-					event.setAppointment(appointment);
-					event.setStatus("SCHEDULED");
-					*/
 					listOfEvents.add(event);
 				}
 			}
