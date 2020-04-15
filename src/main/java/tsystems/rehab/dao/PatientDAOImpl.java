@@ -19,15 +19,8 @@ public class PatientDAOImpl implements PatientDAO{
 	private SessionFactory sessionFactory;
 	
 	@Override
-	public List<Patient> list() {
-		@SuppressWarnings("unchecked")
-		TypedQuery<Patient> query = sessionFactory.getCurrentSession().createQuery("from Patient");
-		return query.getResultList();
-	}
-
-	@Override
 	public void save(Patient patient) {
-		sessionFactory.getCurrentSession().saveOrUpdate(patient);;
+		sessionFactory.getCurrentSession().merge(patient);;
 	}
 
 	@Override

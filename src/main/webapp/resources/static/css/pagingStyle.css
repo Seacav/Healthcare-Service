@@ -12,6 +12,69 @@ body {
 	margin: 20px auto 60px;
 }
 
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    padding-top: 100px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    position: relative; 
+    background-color: #fefefe;
+    margin: auto; 
+    padding: 0;
+    /*border: 1px solid #888;*/
+    /*border: none;*/
+    border-radius: 5px;
+    width: 30%;
+}
+
+.modal input[type=text] {
+	border-radius: 5px;
+	border: 2px #079992 solid;
+	padding: 5px;
+	font-size: 14px;
+}
+
+.modal .close {
+    color: black;
+    float: right;
+    line-height: 1;
+    cursor: pointer;
+    text-align: center;
+    width: 26px;
+    font-size: 26px;
+    font-weight: bold;
+    /*
+    background-color: lightgray;
+    border-radius: 4px;*/
+}
+
+.modal .close:hover {
+    color: darkgray;
+}
+
+.modal .modal-header {
+    padding: 2px 2px 4px 16px;
+    background-color: #079992;
+    color: black;
+}
+  
+.modal .modal-body {
+    padding: 16px 16px;
+    background-color:#37495d;
+}
+
+#responseCommentary .modal-body {
+	background-color: #f1f2f6;
+}
+
 #pagination-bar{
 	text-align:center;
 }
@@ -74,13 +137,19 @@ body {
 #pagination-data-container td.options span:first-child:hover{
 	cursor: pointer;
 	color: #16a085;
-	transition: 0.3s;
+	transition: 0.15s;
 }
 
 #pagination-data-container td.options span:nth-child(2):hover{
 	cursor: pointer;
 	color: #e74c3c;
-	transition: 0.3s;
+	transition: 0.15s;
+}
+
+#pagination-data-container td.options span i.fas.fa-info-circle:hover{
+	cursor: pointer;
+	color: #f39c12;
+	transition: 0.15s;
 }
 
 #pagination-data-container thead {

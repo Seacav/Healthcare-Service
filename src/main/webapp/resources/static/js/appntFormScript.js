@@ -29,3 +29,4 @@ addTimeButton.addEventListener('click', function (e) {
 const checkCounter = function(){
     counter>=3 ? addTimeButton.style.display = 'none' : addTimeButton.style.display = 'inline-block';
 }
+

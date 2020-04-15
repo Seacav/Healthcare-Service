@@ -22,7 +22,7 @@
 </div>
 <div class="wrapper">
 	<h2>Appointment details</h2>
-	<div class="info">
+	<div class="info" id="appntInfo">
 		<form:form method="POST" action="cancel?id=${appnt.id}&patientId=${appnt.patient.id }">
 			<button type="submit" class="cancelBtn"><i class="fas fa-window-close"></i> Cancel appointment</button>
 		</form:form>

@@ -12,4 +12,10 @@ public interface PatientService {
 	PatientDto get(long id);
 	
 	PatientDto getByInsurance(String insNumber);
+	
+	void addExistingPatient(long patientId, String diagnosis, String doctorName);
+	
+	void dischargePatient(long patientId);
+	
+	void processPatientForm(PatientDto patient, String doctorName);
 }

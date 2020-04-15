@@ -30,7 +30,7 @@ public class AppointmentDAOImpl implements AppointmentDAO{
 
 	@Override
 	public void save(Appointment appnt) {
-		sessionFactory.getCurrentSession().saveOrUpdate(appnt);
+		sessionFactory.getCurrentSession().merge(appnt);
 	}
 
 	@Override

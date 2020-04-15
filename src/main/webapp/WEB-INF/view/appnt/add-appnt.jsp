@@ -5,12 +5,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Add appointment</title>
-<link rel="stylesheet" href="<c:url value="/resources/static/css/tiles/navbarStyle.css" />">
-<link rel="stylesheet" href="<c:url value="/resources/static/css/tiles/footerStyle.css" />">
-<link rel="stylesheet" href="<c:url value="/resources/static/css/addAppntStyle.css" />">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+	<meta charset="UTF-8">
+	<title>Add appointment</title>
+	<link rel="stylesheet" href="<c:url value="/resources/static/css/tiles/navbarStyle.css" />">
+	<link rel="stylesheet" href="<c:url value="/resources/static/css/tiles/footerStyle.css" />">
+	<link rel="stylesheet" href="<c:url value="/resources/static/css/addAppntStyle.css" />">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
 </head>
 <body>
 <div class="navbar">

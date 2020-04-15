@@ -25,11 +25,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 		for (GrantedAuthority grantAuth : authorities) {			
-			if (grantAuth.getAuthority().equals("ADMIN")) {
+			if (grantAuth.getAuthority().equals("ROLE_ADMIN")) {
 				redirectStrategy.sendRedirect(request, response, "/admin/");
-			} else if (grantAuth.getAuthority().equals("DOCTOR")) {
+			} else if (grantAuth.getAuthority().equals("ROLE_DOCTOR")) {
 				redirectStrategy.sendRedirect(request, response, "/doctor/");
-			} else if (grantAuth.getAuthority().equals("NURSE")) {
+			} else if (grantAuth.getAuthority().equals("ROLE_NURSE")) {
 				redirectStrategy.sendRedirect(request, response, "/nurse/");
 			}
 		}

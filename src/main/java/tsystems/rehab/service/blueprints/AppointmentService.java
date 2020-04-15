@@ -4,7 +4,6 @@ import java.util.List;
 
 import tsystems.rehab.dto.AppointmentDto;
 import tsystems.rehab.dto.EventGeneratorDto;
-import tsystems.rehab.entity.Appointment;
 
 public interface AppointmentService {
 	
@@ -14,10 +13,12 @@ public interface AppointmentService {
 	
 	void save(AppointmentDto appnt);
 	
-	AppointmentDto saveAndReturn(AppointmentDto appnt);
+	void processAppointmentForm(EventGeneratorDto eGen);
 	
-	AppointmentDto generateAppointmentDto(EventGeneratorDto eGen);
+	void changeTimePattern(long appointmentId, List<String> treatTime);
 	
+	void changeDosage(long appointmentId, String dosage);
 	
+	void cancelAppointment(long appointmentId);
 
 }

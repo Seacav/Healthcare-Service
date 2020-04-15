@@ -1,41 +1,71 @@
 package tsystems.rehab.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import tsystems.rehab.dto.AppointmentDto;
 import tsystems.rehab.dto.EventGeneratorDto;
 import tsystems.rehab.service.blueprints.AppointmentService;
 import tsystems.rehab.service.blueprints.EventService;
 import tsystems.rehab.service.blueprints.PatientService;
-import tsystems.rehab.service.blueprints.TreatmentService;
 
 @Controller
 public class AppointmentController {
 
 	private PatientService patientService;
 	private AppointmentService appointmentService;
-	private TreatmentService treatmentService;
 	private EventService eventService;
+	
+	private static Logger logger = LogManager.getLogger(AppointmentController.class.getName());
 	
 	@Autowired
 	public AppointmentController(PatientService patientService,
 				AppointmentService appointmentService,
-				EventService eventService,
-				TreatmentService treatmentService) {
+				EventService eventService) {
 		this.patientService = patientService;
 		this.appointmentService = appointmentService;
-		this.treatmentService = treatmentService;
 		this.eventService = eventService;
+	}
+	
+	@GetMapping("/doctor/addAppointment")
+	public String addAppointment(@RequestParam("patientId") Long id, Model model) {
+		logger.info("GET /doctor/addAppointment?patientId={}", id);
+		model.addAttribute("patientId", id);
+		return "appnt/add-appnt";
+	}
+	
+	@PostMapping("/doctor/list-appointments/cancel")
+	public String cancelAppointment(@RequestParam("id") long id,
+			@RequestParam("patientId") long patientId) {
+		logger.info("POST /doctor/list-appointments/cancel?id={}&patientId={}", id, patientId);
+		appointmentService.cancelAppointment(id);
+		return "redirect:/doctor/list-appointments?id="+patientId;
+	}
+	
+	@PostMapping("doctor/list-appointments/changeDosage")
+	public String changeDosage(@RequestParam("id") long id,
+			@ModelAttribute("dosage") String dosage) {
+		appointmentService.changeDosage(id, dosage);
+		return "redirect:/doctor/list-appointments/show?appointmentId="+id;
+	}
+	
+	@PostMapping("/doctor/list-appointments/changePattern")
+	public String changePattern(@RequestParam("id") long id,
+			@RequestParam("treatTime[]") List<String> treatTime) {
+		appointmentService.changeTimePattern(id, treatTime);
+		return "redirect:/doctor/list-appointments/show?appointmentId="+id;
 	}
 	
 	@GetMapping("/doctor/list-appointments")
@@ -43,6 +73,16 @@ public class AppointmentController {
 		model.addAttribute("patient", patientService.get(id));
 		model.addAttribute("appnt", appointmentService.getByPatientId(id));
 		return "appnt/list-appnt";
+	}
+
+	@PostMapping("/doctor/addAppointment/processForm")
+	public String processAppointmentForm(@ModelAttribute("eventGenerator") @Valid EventGeneratorDto eGen,
+			BindingResult br, HttpServletRequest request) {
+		if (br.hasErrors()) {
+			return "redirect:"+request.getHeader("referer");
+		}
+		appointmentService.processAppointmentForm(eGen);
+		return "redirect:/doctor/list-appointments?id="+eGen.getPatientId();
 	}
 	
 	@GetMapping("/doctor/list-appointments/show")
@@ -52,42 +92,6 @@ public class AppointmentController {
 		return "appnt/show-appnt";
 	}
 	
-	@PostMapping("/doctor/list-appointments/cancel")
-	public String cancelAppointment(@RequestParam("id") long id,
-			@RequestParam("patientId") long patientId) {
-		AppointmentDto appnt = appointmentService.getById(id);
-		appnt.setStatus("INVALID");
-		appointmentService.save(appnt);
-		return "redirect:/doctor/list-appointments?id="+patientId;
-	}
-	
-	@PostMapping("doctor/list-appointments/changeDosage")
-	public String changeDosage(@RequestParam("id") long id,
-			@ModelAttribute("dosage") String dosage) {
-		AppointmentDto appnt = appointmentService.getById(id);
-		appnt.setDosage(dosage);
-		appointmentService.save(appnt);
-		return "redirect:/doctor/list-appointments/show?appointmentId="+id;
-	}
-	
-	@PostMapping("/doctor/list-appointments/changePattern")
-	public String changePattern(@RequestParam("id") long id,
-			@RequestParam("treatTime[]") List<String> treatTime) {
-		LocalDateTime nearestDate = eventService.getNearestDate(id);
-		eventService.deleteNearestElements(id);
-		AppointmentDto appnt = appointmentService.getById(id);
-		appnt.setReceiptTimes(treatTime.stream().collect(Collectors.joining(" ")));
-		appointmentService.save(appnt);
-		eventService.changeTimesPattern(appnt, treatTime, nearestDate);
-		return "redirect:/doctor/list-appointments/show?appointmentId="+id;
-	}
-	
-	@GetMapping("/doctor/addAppointment")
-	public String addAppointment(@RequestParam("patientId") Long id, Model model) {
-		model.addAttribute("patientId", id);
-		return "appnt/add-appnt";
-	}
-
 	@GetMapping("/doctor/addAppointment/showForm")
 	public String showAppointmentForm(@RequestParam("patientId") Long id,
 			@RequestParam("treatmentId") Long treatmentId, 
@@ -99,22 +103,6 @@ public class AppointmentController {
 		model.addAttribute("isDrug", isDrug);
 		return "appnt/appnt-form";
 	}
-	
-	@PostMapping("/doctor/addAppointment/processForm")
-	public String processAppointmentForm(@ModelAttribute("eventGenerator") EventGeneratorDto eGen) {		
-		AppointmentDto appntDto = appointmentService.generateAppointmentDto(eGen);
-		
-		appntDto.setPatient(patientService.get(eGen.getPatientId()));
-		
-		appntDto.setTreatment(treatmentService.getById(eGen.getTreatmentId()));
-		
-		appntDto = appointmentService.saveAndReturn(appntDto);
-		
-		eventService.generateEvents(appntDto, eGen);
-		
-		return "redirect:/doctor/list-appointments?id="+appntDto.getPatient().getId();
-	}
-	
 }
 
 

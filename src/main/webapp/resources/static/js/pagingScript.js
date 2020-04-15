@@ -32,15 +32,15 @@ function template(data){
 		}
 		$('<td>', {text: item.status}).appendTo(tRow);
 		$('<td>', {text: date.format('HH:mm DD.MM.YY')}).appendTo(tRow);
+		var td = $('<td>', {class: 'options'});
 		if (item.status==='SCHEDULED'){
-			var td = $('<td>', {class: 'options'})
 			$('<span>', {
 				html: '<i class="fas fa-check"></i></span>',
 				click: function(){
 						var token = $("meta[name='_csrf']").attr("content");
 						$.ajax({
 					        type:    "POST",
-					        url:     "http://localhost:8080/Rehab/completeEvent",
+					        url:     "/Rehab/completeEvent",
 					        headers: {"X-CSRF-TOKEN": token},
 					        data:    {
 					            "id": item.id,
@@ -58,17 +58,25 @@ function template(data){
 			$('<span>', {
 				html: '<i class="fas fa-times"></i>',
 				click: function(){
-					var token = $("meta[name='_csrf']").attr("content");
+					cancelEvent(item.id);
+			},
+			}).appendTo(td);
+		} else if (item.status==='CANCELLED'){
+			$('<span>', {
+				html: '<i class="fas fa-info-circle"></i>',
+				click: function(){
 					$.ajax({
-				        type:    "POST",
-				        url:     "http://localhost:8080/Rehab/cancelEvent",
-				        headers: {"X-CSRF-TOKEN": token},
+				        type:    "GET",
+				        url:     "/Rehab/getCommentary",
 				        data:    {
-				            "id": item.id,
+				            "eventId": item.id,
 				        },
 				        success: function(res) {
-				            console.log('Success');
-				            paginate(`?filterName=${$('#filter-by').val()}&patientName=${$('#patientFilter').val()}`);
+				        	$('#responseCommentary').show();
+				        	$('#reasonText').text(res.commentary);
+				        	$('#closeResponseModal').click(function(){
+				        		$('#responseCommentary').hide();
+				        	});
 				        },
 				        error: function(res) {
 				        	alert('Failed to process');
@@ -76,10 +84,8 @@ function template(data){
 				    });
 			},
 			}).appendTo(td);
-			tRow.append(td);
-		} else {
-			$('<td>', {html: '', class: 'options'}).appendTo(tRow);
 		}
+		tRow.append(td);
 		tbody.append(tRow);
     });
 	
@@ -101,13 +107,6 @@ function paginate(filterBy){
     totalNumberLocator: function(response){
     	return response.length;
     },
-    /*
-    ajax: {
-        beforeSend: function() {
-        	$('#pagination-data-container').html('Loading data. Please wait...');
-        }
-    },
-    */
     callback: function(data, pagination) {
 	    var html = template(data);
 	    $('#pagination-data-container').html(html);
@@ -131,4 +130,43 @@ paginate(filterName);
 
 
 
+// Commentary modalbox
+function cancelEvent(id){
+	var modal = $('#commentaryModal');
+	modal.show();
+	$("#commentaryText").val('');
+	$('#closeModal').click(function(){
+		modal.hide();
+	});
+	
+	$('#cancelEvent').click(function(){
+		var token = $("meta[name='_csrf']").attr("content");
+		var text = $("#commentaryText").val();
+		$.ajax({
+	        type:    "POST",
+	        url:     "/Rehab/cancelEvent",
+	        headers: {"X-CSRF-TOKEN": token},
+	        data:    {
+	            "id": id,
+	            "commentary": text,
+	        },
+	        success: function(res) {
+	        	modal.hide();
+	            paginate(`?filterName=${$('#filter-by').val()}&patientName=${$('#patientFilter').val()}`);
+	        },
+	        error: function(res) {
+	        	modal.hide();
+	        	paginate(`?filterName=${$('#filter-by').val()}&patientName=${$('#patientFilter').val()}`);
+	        	alert('Failed to process');
+            }
+	    });
+	});
+};
 
+$(window).click(function(e) {
+	if (e.target.id === "commentaryModal"){
+		$('#commentaryModal').hide();
+	} else if (e.target.id === "responseCommentary"){
+		$('#responseCommentary').hide();
+	}
+});

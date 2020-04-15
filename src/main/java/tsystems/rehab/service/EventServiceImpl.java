@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tsystems.rehab.dao.blueprints.EventDAO;
 import tsystems.rehab.dto.AppointmentDto;
 import tsystems.rehab.dto.EventDto;
-import tsystems.rehab.dto.EventGeneratorDto;
 import tsystems.rehab.mapper.EventMapper;
 import tsystems.rehab.service.blueprints.EventService;
 
@@ -38,38 +36,42 @@ public class EventServiceImpl implements EventService{
 	private EventDAO eventDAO;
 
 	@Override
-	public void generateEvents(AppointmentDto appointment, EventGeneratorDto eGen) {
+	public void generateEvents(AppointmentDto appnt, int duration, 
+			List<Integer> days, List<String> treatTime, boolean startsNextWeek){
+		
 		List<EventDto> listOfEvents = new ArrayList<>();
 		
 		//Field that will help us to get first day of week
 		TemporalField field = WeekFields.of(Locale.FRANCE).dayOfWeek();
 		
+		//Date to prevent generating events in past
 		LocalDateTime today = LocalDateTime.now();
 		
 		//Equals Monday 00:00
-		LocalDateTime startOfDefaultWeek = appointment.getCreated_at().toInstant()
+		LocalDateTime startOfDefaultWeek = appnt.getCreated_at().toInstant()
 				.atZone(ZoneId.systemDefault())
 				.toLocalDate().with(field, 1).atStartOfDay();
 		
-		if (eGen.isStartNextWeek())
+		if (startsNextWeek) {
 			startOfDefaultWeek = startOfDefaultWeek.plusWeeks(1);
+		}
 		
-		for (int i = 0; i < eGen.getDuration(); i++) {
+		for (int i = 0; i < duration; i++) {
 			LocalDateTime startOfNextWeek = startOfDefaultWeek.plusWeeks(i);
-			for (Integer d : eGen.getDays()) {
-				for (String time : eGen.getTreatTime()) {
+			for (Integer d : days) {
+				for (String time : treatTime) {
 					LocalTime eventTime = LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
 					LocalDateTime eventDateTime = startOfNextWeek.plusDays(d).withHour(eventTime.getHour()).withMinute(eventTime.getMinute());
 					if(today.compareTo(eventDateTime)<0) {
 						EventDto event = EventDto.builder()
 								.date(Timestamp.valueOf(eventDateTime))
-								.appointment(appointment)
+								.appointment(appnt)
 								.status("SCHEDULED").build();
 						listOfEvents.add(event);
 					}
 				}
 			}
-		}		
+		}
 		eventDAO.saveEvents(listOfEvents.stream().map(event -> mapper.toEntity(event)).collect(Collectors.toList()));
 	}
 
@@ -84,10 +86,13 @@ public class EventServiceImpl implements EventService{
 	}
 
 	@Override
-	public void changeTimesPattern(AppointmentDto appointment, List<String> newTreatTime, LocalDateTime nearestDate) {
+	public void changeTimesPattern(AppointmentDto appointment, List<String> newTreatTime) {
+		LocalDateTime nearestDate = getNearestDate(appointment.getId());
 		TemporalField field = WeekFields.of(Locale.FRANCE).dayOfWeek();
 		LocalDateTime startOfDefaultWeek = nearestDate.toLocalDate().with(field, 1).atStartOfDay();
 		LocalDateTime dueDate = appointment.getDueDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+		
+		deleteNearestElements(appointment.getId());
 		
 		List<EventDto> listOfEvents = new ArrayList<EventDto>();
 		
@@ -99,11 +104,13 @@ public class EventServiceImpl implements EventService{
 				for (String time : newTreatTime) {
 					LocalTime eventTime = LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
 					LocalDateTime eventDateTime = startOfDefaultWeek.plusDays(d).withHour(eventTime.getHour()).withMinute(eventTime.getMinute());
-					EventDto event = EventDto.builder()
-							.date(Timestamp.valueOf(eventDateTime))
-							.appointment(appointment)
-							.status("SCHEDULED").build();
-					listOfEvents.add(event);
+					if (eventDateTime.compareTo(LocalDateTime.now())>0) {
+						EventDto event = EventDto.builder()
+								.date(Timestamp.valueOf(eventDateTime))
+								.appointment(appointment)
+								.status("SCHEDULED").build();
+						listOfEvents.add(event);
+					}
 				}
 			}
 			startOfDefaultWeek = startOfDefaultWeek.plusWeeks(1);
@@ -136,10 +143,21 @@ public class EventServiceImpl implements EventService{
 	}
 
 	@Override
-	public void cancelEvent(long id) {
+	public void cancelEvent(long id, String commentary) {
 		EventDto event = mapper.toDto(eventDAO.getById(id));
+		event.setCommentary(commentary);
 		event.setStatus("CANCELLED");
 		eventDAO.saveEvent(mapper.toEntity(event));
+	}
+
+	@Override
+	public String getCommentary(long id) {
+		return eventDAO.getById(id).getCommentary();
+	}
+
+	@Override
+	public BigInteger getNumberOfActiveEvents(long appointmentId) {
+		return eventDAO.getNumberOfActiveEvents(appointmentId);
 	}
 	
 }

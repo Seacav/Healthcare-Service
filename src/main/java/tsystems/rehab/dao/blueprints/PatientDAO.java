@@ -5,8 +5,6 @@ import java.util.List;
 import tsystems.rehab.entity.Patient;
 
 public interface PatientDAO {
-	List<Patient> list();
-	
 	void save(Patient patient);
 	
 	Patient get(long id);

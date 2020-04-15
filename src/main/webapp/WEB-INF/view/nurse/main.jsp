@@ -25,6 +25,29 @@
 			</form:form>
 	</div>
     <div id="wrapper">
+	    <div class="modal" id="commentaryModal">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		            <span class="close" id="closeModal">&times;</span>
+		            <h2>Enter commentary:</h2>
+		        </div>
+		        <div class="modal-body">
+	               	<input type="text" id="commentaryText" name="commentary">
+		            <button type="button" id="cancelEvent">Submit</button>
+		        </div>
+		    </div>
+		</div>
+		<div class="modal" id="responseCommentary">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		            <span class="close" id="closeResponseModal">&times;</span>
+		            <h2>Cancel reason</h2>
+		        </div>
+		        <div class="modal-body">
+		        	<a id="reasonText"></a>
+		        </div>
+		    </div>
+		</div>
         <section>
         	<div id="filters">
         		Show

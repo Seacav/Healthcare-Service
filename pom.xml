@@ -77,6 +77,39 @@
 	    <version>5.4.12.Final</version>
 	</dependency>
 	
+				<!-- Logging -->
+	<dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-api</artifactId>
+	    <version>2.13.1</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-core</artifactId>
+	    <version>2.13.1</version>
+	</dependency>
+	
+				<!-- Messaging -->
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-jms</artifactId>
+	    <version>5.2.5.RELEASE</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>org.apache.activemq</groupId>
+	    <artifactId>activemq-spring</artifactId>
+	    <version>5.15.12</version>
+	</dependency>
+	
+				<!-- Validation -->
+	<dependency>
+	    <groupId>org.hibernate.validator</groupId>
+	    <artifactId>hibernate-validator</artifactId>
+	    <version>6.1.2.Final</version>
+	</dependency>
+	
 	<dependency>
 	    <groupId>javax.servlet</groupId>
 	    <artifactId>jstl</artifactId>

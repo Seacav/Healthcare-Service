@@ -22,4 +22,19 @@ public class LoginController {
 		return "login-page";
 	}
 	
+	@GetMapping("/")
+	public String rootPage(Authentication auth) {
+		if (auth != null) {
+			String role = auth.getAuthorities().toString().toLowerCase();
+			if (role.contains("doctor")) {
+				return "redirect:/doctor/";
+			} else if (role.contains("nurse")) {
+				return "redirect:/nurse/";
+			} else if (role.contains("admin")) {
+				return "redirect:/admin/";
+			}
+		}
+		return null;
+	}
+	
 }

@@ -6,21 +6,56 @@ const modalPattern = document.getElementById('patternModal');
 const showPtrnModal = document.getElementById('patternBtn');
 const closePtrnModal = document.getElementById('closePtrn');
 
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const url=`/Rehab/activeEvents?id=${urlParams.get('appointmentId')}`;
+var promise = fetch(url);
+
+promise = promise
+.then(data=>{
+	return data.json()
+});
+	
+console.log(showDsgModal);
+
 // Listeners for dosage modal box
 if (showDsgModal !== null) {
-	showDsgModal.onclick = function() {
-	    modalDosage.style.display = 'block';
-	}
+	//Code to check active(i.e. scheduled) events in appointment. If there are no active events then
+	//change dosage button will not be shown
+	promise
+	.then(res=>{
+		console.log(res);
+		if (res===0){
+			showDsgModal.style.display = 'none';
+		} else {
+			showDsgModal.style.display = 'inline-block';
+			showDsgModal.onclick = function() {
+			    modalDosage.style.display = 'block';
+			}
+		}
+	})
 }
 
 closeDsgModal.onclick = function() {
     modalDosage.style.display = 'none';
-}
+};
 
 //Listener for pattern modal box
-showPtrnModal.onclick = function(){
-    modalPattern.style.display = 'block';
-}
+if (showPtrnModal !== null) {
+	//Code to check active(i.e. scheduled) events in appointment. If there are no active events then
+	//change dosage button will not be shown
+	promise
+	.then(res=>{
+		if (res===0){
+			showPtrnModal.style.display = 'none';
+		} else {
+			showPtrnModal.style.display = 'inline-block';
+			showPtrnModal.onclick = function(){
+				modalPattern.style.display = 'block';
+			}
+		}
+	})
+};
 
 closePtrnModal.onclick = function() {
     modalPattern.style.display = 'none';
@@ -66,3 +101,6 @@ addTimeButton.addEventListener('click', function (e) {
 const checkCounter = function(){
     counter>=3 ? addTimeButton.style.display = 'none' : addTimeButton.style.display = 'inline-block';
 }
+
+
+
