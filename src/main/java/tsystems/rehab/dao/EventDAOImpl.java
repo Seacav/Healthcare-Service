@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -18,7 +19,6 @@ import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import tsystems.rehab.controller.PatientController;
 import tsystems.rehab.dao.blueprints.EventDAO;
 import tsystems.rehab.entity.Event;
 
@@ -30,6 +30,23 @@ public class EventDAOImpl implements EventDAO{
 	
 	private static Logger logger = LogManager.getLogger(EventDAOImpl.class);
 
+	@Override
+	public List<Event> getAllFiltered(int pageSize, int pageNumber, String filterName, String patientName) {
+		String query = "select event.* from event ";
+		@SuppressWarnings("unchecked")
+		NativeQuery<Event> sqlQuery = constructQuery(pageSize, pageNumber, filterName, patientName, query, false);
+		return sqlQuery.getResultList();
+	}
+	
+	@Override
+	public BigInteger getTotalNumberOfEvents(int pageSize, int pageNumber, String filterName, String patientName) {
+		String query = "select count(event.id) from event ";
+		@SuppressWarnings("unchecked")
+		NativeQuery<BigInteger> sqlQuery = constructQuery(pageSize, pageNumber, filterName, patientName, query, true);
+		return sqlQuery.getSingleResult();
+	}
+	
+	//Constructs query either for getting filtered events or total number of events
 	@Override
 	@SuppressWarnings("rawtypes")
 	public NativeQuery constructQuery(int pageSize, int pageNumber, String filterName, 
@@ -69,7 +86,18 @@ public class EventDAOImpl implements EventDAO{
 	}
 	
 	@Override
+	public List<Event> getNearestEvents(long appointmentId) {
+		@SuppressWarnings("unchecked")
+		NativeQuery<Event> sqlQuery = sessionFactory.getCurrentSession()
+				.createSQLQuery("select * from event as e where e.appointment_id=:id and e.status='SCHEDULED'")
+				.addEntity(Event.class);
+		sqlQuery.setParameter("id", appointmentId);
+		return sqlQuery.getResultList();
+	}
+	
+	@Override
 	public void deleteNearestEvents(long appointmentId) {
+		@SuppressWarnings("rawtypes")
 		NativeQuery sqlQuery = sessionFactory.getCurrentSession()
 				.createSQLQuery("delete from event as e where e.appointment_id=:id and e.status='SCHEDULED'");
 		sqlQuery.setParameter("id", appointmentId);
@@ -77,25 +105,14 @@ public class EventDAOImpl implements EventDAO{
 	}
 	
 	@Override
-	public List<Event> getAll(int pageSize, int pageNumber, String filterName) {
+	public List<Event> getEventsForToday() {
 		@SuppressWarnings("unchecked")
 		NativeQuery<Event> sqlQuery = sessionFactory.getCurrentSession()
-				.createSQLQuery("select * from event limit :offset, :limit")
-				.addEntity(Event.class)
-				.setParameter("limit", pageSize);
-		if (pageNumber==1) {
-			sqlQuery.setParameter("offset", 0);
-		} else {
-			sqlQuery.setParameter("offset", pageSize*(pageNumber-1));
-		}
-		return sqlQuery.getResultList();
-	}
-
-	@Override
-	public List<Event> getAllFiltered(int pageSize, int pageNumber, String filterName, String patientName) {
-		String query = "select event.* from event ";
-		@SuppressWarnings("unchecked")
-		NativeQuery<Event> sqlQuery = constructQuery(pageSize, pageNumber, filterName, patientName, query, false);
+				.createSQLQuery("select event.* from event inner join appointment on event.appointment_id=appointment.id"
+						+ " where appointment.status='VALID' and event.date < :endTime and event.date > :startTime")
+				.addEntity(Event.class);
+		sqlQuery.setParameter("endTime", Timestamp.valueOf(LocalDate.now().atStartOfDay().plusHours(24)));
+		sqlQuery.setParameter("startTime", Timestamp.valueOf(LocalDate.now().atStartOfDay()));
 		return sqlQuery.getResultList();
 	}
 
@@ -107,6 +124,43 @@ public class EventDAOImpl implements EventDAO{
 				.addEntity(Event.class)
 				.setParameter("id", appointmentId);
 		return sqlQuery.getResultList();
+	}
+	
+	@Override
+	public void cancelByAppointmentId(long appointmentId) {
+		@SuppressWarnings("rawtypes")
+		NativeQuery sqlQuery = sessionFactory.getCurrentSession()
+				.createSQLQuery("update event as e set e.status='CANCELLED' "
+						+ "where e.appointment_id=:id and e.status='SCHEDULED'");
+		sqlQuery.setParameter("id", appointmentId);
+		sqlQuery.executeUpdate();
+	}
+	
+	
+	@Override
+	public List<Event> getByPatientId(long patientId) {
+		@SuppressWarnings("unchecked")
+		NativeQuery<Event> sqlQuery = sessionFactory.getCurrentSession()
+				.createSQLQuery("select e.* from event as e inner join appointment as a " + 
+						"on e.appointment_id=a.id where " + 
+						"a.patient_id=:id and e.date < :endTime and e.date > :startTime")
+				.addEntity(Event.class)
+				.setParameter("id", patientId);
+		sqlQuery.setParameter("endTime", Timestamp.valueOf(LocalDate.now().atStartOfDay().plusHours(24)));
+		sqlQuery.setParameter("startTime", Timestamp.valueOf(LocalDate.now().atStartOfDay()));
+		return sqlQuery.getResultList();
+	}
+	
+	@Override
+	public void cancelByPatientId(long patientId) {
+		@SuppressWarnings("rawtypes")
+		NativeQuery sqlQuery = sessionFactory.getCurrentSession()
+				.createSQLQuery("update event as e inner join appointment as a "
+						+ "on e.appointment_id=a.id "
+						+ "set e.status='CANCELLED' "
+						+ "where a.patient_id=:id");
+		sqlQuery.setParameter("id", patientId);
+		sqlQuery.executeUpdate();
 	}
 
 	@Override
@@ -122,6 +176,7 @@ public class EventDAOImpl implements EventDAO{
 
 	@Override
 	public Date getNearestDate(long appointmentId) {
+		@SuppressWarnings("rawtypes")
 		NativeQuery sqlQuery = sessionFactory.getCurrentSession()
 				.createSQLQuery("select date from event as e "
 						+ "where e.appointment_id=:id and e.status='SCHEDULED' and current_timestamp()<e.date "
@@ -139,13 +194,7 @@ public class EventDAOImpl implements EventDAO{
 		return sqlQuery.getSingleResult();
 	}
 	
-	@Override
-	public BigInteger getTotalNumberOfEvents(int pageSize, int pageNumber, String filterName, String patientName) {
-		String query = "select count(event.id) from event ";
-		@SuppressWarnings("unchecked")
-		NativeQuery<BigInteger> sqlQuery = constructQuery(pageSize, pageNumber, filterName, patientName, query, true);
-		return sqlQuery.getSingleResult();
-	}
+	
 	
 	@Override
 	public void saveEvent(Event event) {
@@ -156,7 +205,9 @@ public class EventDAOImpl implements EventDAO{
 	@Override
 	public void saveEvents(List<Event> events) {
 		Session session = sessionFactory.getCurrentSession();
-		events.forEach(event -> session.save(event));
+		events.forEach(event -> {
+			session.save(event);
+		});
 	}
 
 }

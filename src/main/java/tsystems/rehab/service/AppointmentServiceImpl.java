@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import tsystems.rehab.dao.blueprints.AppointmentDAO;
+import tsystems.rehab.dao.blueprints.EventDAO;
 import tsystems.rehab.dto.AppointmentDto;
 import tsystems.rehab.dto.EventGeneratorDto;
 import tsystems.rehab.mapper.AppointmentMapper;
@@ -57,6 +58,12 @@ public class AppointmentServiceImpl implements AppointmentService{
 	@Override
 	public List<AppointmentDto> getByPatientId(long id) {
 		return appointmentDAO.getByPatientId(id).stream().map(appnt -> mapper.toDto(appnt)).collect(Collectors.toList());
+	}
+	
+	@Override
+	public void cancelByPatientId(long id) {
+		appointmentDAO.cancelByPatientId(id);
+		eventService.cancelByPatientId(id);
 	}
 	
 	@Override
@@ -112,6 +119,7 @@ public class AppointmentServiceImpl implements AppointmentService{
 		AppointmentDto appnt = getById(appointmentId);
 		appnt.setDosage(dosage);
 		save(appnt);
+		eventService.changeDosage(appointmentId);
 	}
 
 	@Override
@@ -119,6 +127,7 @@ public class AppointmentServiceImpl implements AppointmentService{
 		AppointmentDto appnt = getById(appointmentId);
 		appnt.setStatus("INVALID");
 		save(appnt);
+		eventService.cancelByAppointmentId(appointmentId);
 	}
 	
 	

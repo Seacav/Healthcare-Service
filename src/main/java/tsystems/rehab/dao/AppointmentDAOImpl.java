@@ -27,6 +27,16 @@ public class AppointmentDAOImpl implements AppointmentDAO{
 		sqlQuery.addEntity(Appointment.class);
 		return sqlQuery.getResultList();
 	}
+	
+	@Override
+	public void cancelByPatientId(long id) {
+		@SuppressWarnings("rawtypes")
+		NativeQuery sqlQuery = sessionFactory.getCurrentSession()
+				.createSQLQuery("update appointment as a set a.status='INVALID' "
+						+ "where a.patient_id=:id and a.status='VALID'");
+		sqlQuery.setParameter("id", id);
+		sqlQuery.executeUpdate();
+	}
 
 	@Override
 	public void save(Appointment appnt) {

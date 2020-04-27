@@ -1,7 +1,5 @@
 package tsystems.rehab.dto;
 
-import javax.validation.constraints.NotBlank;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,15 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TreatmentDto {
+public class UserRequestDto {
 
 	private Long id;
-	
-	@NotBlank
-	private String type;
-	
-	@NotBlank
-	private String name;
-
+	private String username;
+	private String role;
+	private String firstName;
+	private String lastName;
 	
 }

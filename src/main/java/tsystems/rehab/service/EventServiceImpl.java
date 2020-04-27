@@ -2,6 +2,7 @@ package tsystems.rehab.service;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -9,20 +10,30 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import tsystems.rehab.dao.blueprints.EventDAO;
 import tsystems.rehab.dto.AppointmentDto;
 import tsystems.rehab.dto.EventDto;
+import tsystems.rehab.dto.EventTableDto;
+import tsystems.rehab.dto.InfotableDto;
+import tsystems.rehab.entity.Event;
 import tsystems.rehab.mapper.EventMapper;
+import tsystems.rehab.messaging.Producer;
 import tsystems.rehab.service.blueprints.EventService;
 
 @Service
@@ -34,6 +45,9 @@ public class EventServiceImpl implements EventService{
 	
 	@Autowired
 	private EventDAO eventDAO;
+	
+	@Autowired
+	private Producer producer;
 
 	@Override
 	public void generateEvents(AppointmentDto appnt, int duration, 
@@ -72,7 +86,9 @@ public class EventServiceImpl implements EventService{
 				}
 			}
 		}
-		eventDAO.saveEvents(listOfEvents.stream().map(event -> mapper.toEntity(event)).collect(Collectors.toList()));
+		List<Event> newEvents = listOfEvents.stream().map(event -> mapper.toEntity(event)).collect(Collectors.toList());
+		eventDAO.saveEvents(newEvents);
+		updateInfotable(newEvents, "CREATE");
 	}
 
 	@Override
@@ -82,7 +98,9 @@ public class EventServiceImpl implements EventService{
 
 	@Override
 	public void deleteNearestElements(Long appointmentId) {
+		List<Event> deletedEvents = eventDAO.getNearestEvents(appointmentId);
 		eventDAO.deleteNearestEvents(appointmentId);
+		updateInfotable(deletedEvents, "DELETE");
 	}
 
 	@Override
@@ -115,12 +133,43 @@ public class EventServiceImpl implements EventService{
 			}
 			startOfDefaultWeek = startOfDefaultWeek.plusWeeks(1);
 		}
-		eventDAO.saveEvents(listOfEvents.stream().map(event -> mapper.toEntity(event)).collect(Collectors.toList()));
+		List<Event> newEvents = listOfEvents.stream().map(event -> mapper.toEntity(event)).collect(Collectors.toList());
+		eventDAO.saveEvents(newEvents);
+		updateInfotable(newEvents, "CREATE");
+	}
+	
+	@Override
+	public void changeDosage(long appointmentId) {
+		List<Event> events = eventDAO.getByAppointmentId(appointmentId);
+		updateInfotable(events, "UPDATE");
+	}
+	
+	@Override
+	public List<EventTableDto> getEventsForToday() {
+		List<Event> events = eventDAO.getEventsForToday();
+		ModelMapper modelMapper = new ModelMapper();
+		List<EventTableDto> tableEvents = events.stream().map(event -> modelMapper.map(event, EventTableDto.class))
+				.collect(Collectors.toList());
+		return tableEvents;
 	}
 
 	@Override
 	public List<EventDto> getByAppointmentId(Long appointmentId) {
 		return eventDAO.getByAppointmentId(appointmentId).stream().map(event -> mapper.toDto(event)).collect(Collectors.toList());
+	}
+	
+	@Override
+	public void cancelByAppointmentId(Long appointmentId) {
+		eventDAO.cancelByAppointmentId(appointmentId);
+		List<Event> events = eventDAO.getByAppointmentId(appointmentId);
+		updateInfotable(events, "UPDATE");
+	}
+	
+	@Override
+	public void cancelByPatientId(long patientId) {
+		eventDAO.cancelByPatientId(patientId);
+		List<Event> events = eventDAO.getByPatientId(patientId);
+		updateInfotable(events, "UPDATE");
 	}
 
 	@Override
@@ -137,17 +186,21 @@ public class EventServiceImpl implements EventService{
 
 	@Override
 	public void completeEvent(long id) {
-		EventDto event = mapper.toDto(eventDAO.getById(id));
+		Event event = eventDAO.getById(id);
+		//EventDto event = mapper.toDto(eventDAO.getById(id));
 		event.setStatus("COMPLETED");
-		eventDAO.saveEvent(mapper.toEntity(event));
+		eventDAO.saveEvent(event);
+		updateInfotable(new ArrayList<Event>(Arrays.asList(event)), "UPDATE");
 	}
 
 	@Override
 	public void cancelEvent(long id, String commentary) {
-		EventDto event = mapper.toDto(eventDAO.getById(id));
+		//EventDto event = mapper.toDto(eventDAO.getById(id));
+		Event event = eventDAO.getById(id);
 		event.setCommentary(commentary);
 		event.setStatus("CANCELLED");
-		eventDAO.saveEvent(mapper.toEntity(event));
+		eventDAO.saveEvent(event);
+		updateInfotable(new ArrayList<Event>(Arrays.asList(event)), "UPDATE");
 	}
 
 	@Override
@@ -160,6 +213,24 @@ public class EventServiceImpl implements EventService{
 		return eventDAO.getNumberOfActiveEvents(appointmentId);
 	}
 	
+	public void updateInfotable(List<Event> newEvents, String flag) {
+		ModelMapper modelMapper = new ModelMapper();
+		List<EventTableDto> tableEvents = newEvents.stream().map(event -> modelMapper.map(event, EventTableDto.class))
+				.collect(Collectors.toList());
+		Date endOfDay = Timestamp.valueOf(LocalDate.now().atStartOfDay().plusHours(24));
+		Date startOfDay = Timestamp.valueOf(LocalDate.now().atStartOfDay());
+		tableEvents = tableEvents.stream()
+				.filter(event -> event.getDate().compareTo(startOfDay)>0 && event.getDate().compareTo(endOfDay)<0)
+				.collect(Collectors.toList());
+		if (!tableEvents.isEmpty()) {
+			try {
+				InfotableDto infotable = InfotableDto.builder().flag(flag).events(tableEvents).build();
+				producer.sendMessage("main-to-table.queue", new ObjectMapper().writeValueAsString(infotable));
+			} catch (JsonProcessingException e) {
+			}
+		}
+	}
+
 }
 
 

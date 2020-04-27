@@ -13,6 +13,7 @@ import tsystems.rehab.dao.blueprints.PatientDAO;
 import tsystems.rehab.dto.PatientDto;
 import tsystems.rehab.entity.Patient;
 import tsystems.rehab.mapper.PatientMapper;
+import tsystems.rehab.service.blueprints.AppointmentService;
 import tsystems.rehab.service.blueprints.PatientService;
 
 @Service
@@ -24,6 +25,9 @@ public class PatientServiceImpl implements PatientService{
 	
 	@Autowired
 	private PatientMapper mapper;
+	
+	@Autowired
+	private AppointmentService appointmentService;
 
 	@Override
 	public void save(PatientDto patient) {
@@ -67,6 +71,7 @@ public class PatientServiceImpl implements PatientService{
 		PatientDto patient = get(patientId);
 		patient.setStatus("DISCHARGED");
 		save(patient);
+		appointmentService.cancelByPatientId(patientId);
 	}
 
 	@Override

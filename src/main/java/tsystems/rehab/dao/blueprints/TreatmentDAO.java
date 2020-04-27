@@ -10,4 +10,5 @@ public interface TreatmentDAO {
 	
 	Treatment getById(Long id);
 	
+	void saveTreatment(Treatment treatment);
 }

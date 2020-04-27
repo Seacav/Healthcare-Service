@@ -33,4 +33,9 @@ public class TreatmentServiceImpl implements TreatmentService{
 		return mapper.toDto(treatmentDAO.getById(id));
 	}
 
+	@Override
+	public void addNewTreatment(TreatmentDto treatment) {
+		treatmentDAO.saveTreatment(mapper.toEntity(treatment));
+	}
+
 }

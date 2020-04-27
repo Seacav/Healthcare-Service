@@ -2,6 +2,7 @@ package tsystems.rehab.dao;
 
 import java.util.List;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,12 @@ public class TreatmentDAOImpl implements TreatmentDAO{
 				.addEntity(Treatment.class)
 				.setParameter("id", id);
 		return (Treatment) sqlQuery.getSingleResult();
+	}
+
+	@Override
+	public void saveTreatment(Treatment treatment) {
+		Session session = sessionFactory.getCurrentSession();
+		session.save(treatment);
 	}
 
 }

@@ -12,3 +12,18 @@
 	padding: 5px;
 	font-size: 14px;
 }
+
+#patient-form input[type=text]{
+	box-sizing: border-box;
+    width: 150px;
+}
+
+#patient-form span {
+	display: inline-block;
+	box-sizing: border-box;
+    width: 150px;
+}
+
+#patient-form .input-container {
+	margin: 20px 0px;
+}

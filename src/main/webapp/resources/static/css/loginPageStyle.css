@@ -13,6 +13,7 @@ body {
 	background: #f5f6fa;
 	margin: 0 auto;
 	width: 20%;
+	min-width: 250px;
 	border-radius: 10px;
 	text-align: center;
 	margin-top: 10%;
@@ -77,3 +78,4 @@ body {
 	cursor: pointer;
 	transition: 0.3s;
 }
+

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import tsystems.rehab.messaging.JmsProducer;
+import tsystems.rehab.messaging.Producer;
 import tsystems.rehab.service.blueprints.EventService;
 
 @Controller
@@ -23,7 +23,7 @@ public class EventController {
 	private EventService eventService;
 	
 	@Autowired
-	private JmsProducer producer;
+	private Producer producer;
 	
 	private static Logger logger = LogManager.getLogger(EventController.class.getName());
 

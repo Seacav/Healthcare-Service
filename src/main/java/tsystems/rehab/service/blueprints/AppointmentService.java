@@ -9,6 +9,8 @@ public interface AppointmentService {
 	
 	List<AppointmentDto> getByPatientId(long id);
 	
+	void cancelByPatientId(long id);
+	
 	AppointmentDto getById(long id);
 	
 	void save(AppointmentDto appnt);

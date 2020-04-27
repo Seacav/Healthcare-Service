@@ -7,6 +7,7 @@ import java.util.List;
 
 import tsystems.rehab.dto.AppointmentDto;
 import tsystems.rehab.dto.EventDto;
+import tsystems.rehab.dto.EventTableDto;
 
 public interface EventService {
 
@@ -19,7 +20,15 @@ public interface EventService {
 	
 	void changeTimesPattern(AppointmentDto appointment, List<String> newTreatTime);
 	
+	void changeDosage(long appointmentId);
+	
+	List<EventTableDto> getEventsForToday();
+	
 	List<EventDto> getByAppointmentId(Long appointmentId);
+	
+	void cancelByAppointmentId(Long appointmentId);
+	
+	void cancelByPatientId(long patientId);
 	
 	HashMap<String, Object> getAll(int pageSize, int pageNumber, String filterName, String patientName);
 	
@@ -30,4 +39,5 @@ public interface EventService {
 	String getCommentary(long id);
 	
 	BigInteger getNumberOfActiveEvents(long id);
+	
 }

@@ -1,0 +1,22 @@
+.wrapper {
+	padding: 0px 40px;
+}
+
+.wrapper .title {
+	text-align: center;
+}
+
+.registration-form input[type=text], input[type=password], select {
+	box-sizing: border-box;
+    width: 150px;
+}
+
+.registration-form span {
+	display: inline-block;
+	box-sizing: border-box;
+    width: 100px;
+}
+
+.registration-form .input-container {
+	margin: 20px 0px;
+}

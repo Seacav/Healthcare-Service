@@ -10,19 +10,25 @@ import tsystems.rehab.entity.Event;
 
 public interface EventDAO {
 
-	NativeQuery constructQuery(int pageSize, int pageNumber, String filterName, String patientName, String startOfQuery, boolean count);
+	NativeQuery<?> constructQuery(int pageSize, int pageNumber, String filterName, String patientName, String startOfQuery, boolean count);
 	
 	void deleteNearestEvents(long appointmentId);
-	
-	List<Event> getAll(int pageSize, int pageNumber, String filterName);
 	
 	List<Event> getAllFiltered(int pageSize, int pageNumber, String filterName, String patientName);
 	
 	List<Event> getByAppointmentId(long appointmentId);
 	
+	void cancelByAppointmentId(long appointmentId);
+	
+	List<Event> getByPatientId(long patientId);
+	
+	void cancelByPatientId(long patientId);
+	
 	Event getById(long id);
 	
 	Date getNearestDate(long appointmentId);
+	
+	List<Event> getNearestEvents(long appointmentId);
 	
 	BigInteger getTotalNumberOfEvents(int pageSize, int pageNumber, String filterName, String patientName);
 	
@@ -31,4 +37,7 @@ public interface EventDAO {
 	void saveEvent(Event event);
 	
 	void saveEvents(List<Event> event);
+
+	List<Event> getEventsForToday();
+	
 }

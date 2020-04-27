@@ -1,0 +1,27 @@
+.menu-option {
+    text-decoration: none;
+    display: inline-block;
+    background: #95a5a6;
+    color: white;
+    padding: 16px;
+    margin: 10px;
+    font-size: 18px;
+    border-radius: 5px;
+    user-select: none;
+    box-sizing: border-box;
+    width: 150px;
+}
+
+.menu-option:hover {
+	background: #7f8c8d;
+	cursor: pointer;
+}
+
+
+.wrapper {
+	padding: 0px 40px;
+}
+
+.wrapper .title {
+	text-align: center;
+}
