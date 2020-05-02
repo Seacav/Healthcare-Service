@@ -1,0 +1,22 @@
+.wrapper {
+	padding: 0px 40px;
+}
+
+.wrapper .title {
+	text-align: center;
+}
+
+.treatment-form input[type=text], select {
+	box-sizing: border-box;
+    width: 150px;
+}
+
+.treatment-form span {
+	display: inline-block;
+	box-sizing: border-box;
+    width: 70px;
+}
+
+.treatment-form .input-container {
+	margin: 20px 0px;
+}

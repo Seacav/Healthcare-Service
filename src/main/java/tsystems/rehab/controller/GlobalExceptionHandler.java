@@ -30,11 +30,11 @@ public class GlobalExceptionHandler {
 		ResponseStatusExceptionResolver responseStatusExceptionResolver = new ResponseStatusExceptionResolver();
 		return responseStatusExceptionResolver.resolveException(request, response, null, e);
 	}
-	
+	/*
 	@ExceptionHandler(JMSException.class)
 	public void handleJMSException(JMSException nr) {
 		logger.error(nr.getErrorCode() + " Error occurred with message broker");
-	}
+	}*/
 	
 	@ExceptionHandler(JsonProcessingException.class)
 	public void handleJsonProcessingException(JsonProcessingException nr) {

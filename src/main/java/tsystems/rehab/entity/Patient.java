@@ -41,17 +41,5 @@ public class Patient {
 	
 	@Column(name="status")
 	private String status;
-	/*
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "patient")
-	private List<Appointment> appointments;
-	
-	public void add(Appointment appointment) {
-		if (appointments == null) {
-			appointments = new ArrayList<>();
-		}
-		appointments.add(appointment);
-		appointment.setPatient(this);
-	}
-	*/
 	
 }

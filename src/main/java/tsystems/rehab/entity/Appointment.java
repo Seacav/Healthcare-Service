@@ -51,7 +51,7 @@ public class Appointment {
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="created_at")
-	private Date created_at;
+	private Date createdAt;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="due_date")

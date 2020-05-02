@@ -8,7 +8,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="<c:url value="/resources/static/css/tiles/navbarStyle.css" />">
-<link rel="stylesheet" href="<c:url value="/resources/static/css/admin/adminMainStyle.css" />">
+<link rel="stylesheet" href="<c:url value="/resources/static/css/admin/treatmentFormStyle.css" />">
 <link rel="stylesheet" href="<c:url value="/resources/static/css/tiles/footerStyle.css" />">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
 <title>Administrator panel</title>
@@ -22,11 +22,20 @@
 </div>
 <div class="wrapper">
 	<div class="title">
-		<h2>Administrator panel</h2>
+		<h2>Add new treatment</h2>
 	</div>
-	<a class="menu-option" href="<c:url value="registrationForm" />">Register new user</a>
-	<a class="menu-option" href="<c:url value="listUsers" />">List all users</a>
-    <a class="menu-option" href="<c:url value="treatmentForm" />">Add new treatment</a>
+	<form:form action="addTreatment" modelAttribute="treatment" class="treatment-form" method="POST">
+		<div class="input-container">
+			<span>Name: </span><form:input path="name"/>
+		</div>
+		<div class="input-container">
+			<span>Type: </span><form:select path="type">
+			   <form:option value="DRUG" label="Drug" />
+			   <form:option value="PROCEDURE" label="Procedure" />
+			</form:select>
+		</div>
+		<input type="submit" value="Submit"/>
+	</form:form>
 </div>
 <div class="footer">
 	<a>Some info here</a>

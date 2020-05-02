@@ -132,13 +132,13 @@ paginate(filterName);
 
 // Commentary modalbox
 function cancelEvent(id){
+	$('#cancelEvent').unbind();
 	var modal = $('#commentaryModal');
 	modal.show();
 	$("#commentaryText").val('');
 	$('#closeModal').click(function(){
 		modal.hide();
 	});
-	
 	$('#cancelEvent').click(function(){
 		var token = $("meta[name='_csrf']").attr("content");
 		var text = $("#commentaryText").val();

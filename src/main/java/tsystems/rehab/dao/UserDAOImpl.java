@@ -6,6 +6,7 @@ import javax.persistence.TypedQuery;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -38,6 +39,15 @@ public class UserDAOImpl implements UserDAO{
 	public void saveUser(User user) {
 		Session session = sessionFactory.getCurrentSession();
 		session.save(user);
+	}
+
+	@Override
+	public List<User> getUsers() {
+		@SuppressWarnings("unchecked")
+		NativeQuery<User> sqlQuery = sessionFactory.getCurrentSession()
+				.createSQLQuery("select * from user as u where u.role='ROLE_DOCTOR' or u.role='ROLE_NURSE'");
+		sqlQuery.addEntity(User.class);
+		return sqlQuery.getResultList();
 	}
 
 }

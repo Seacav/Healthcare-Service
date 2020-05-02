@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import tsystems.rehab.dao.blueprints.AppointmentDAO;
-import tsystems.rehab.dao.blueprints.EventDAO;
 import tsystems.rehab.dto.AppointmentDto;
 import tsystems.rehab.dto.EventGeneratorDto;
 import tsystems.rehab.mapper.AppointmentMapper;
@@ -87,7 +86,7 @@ public class AppointmentServiceImpl implements AppointmentService{
 				.receiptTimes(eGen.getTreatTime().stream().collect(Collectors.joining(" ")))
 				.dosage(eGen.getDosage())
 				.status("VALID")
-				.created_at(new Date())
+				.createdAt(new Date())
 				.dueDate(Timestamp.valueOf(dueDate))
 				.build();
 		
@@ -96,7 +95,7 @@ public class AppointmentServiceImpl implements AppointmentService{
 	}
 
 	@Override
-	public void changeTimePattern(long appointmentId, List<String> treatTime) {
+	public void changeTimePattern(long appointmentId, List<String> treatTime) throws ResponseStatusException{
 		if (treatTime.isEmpty()) {
 			throw new ResponseStatusException(
 			          HttpStatus.BAD_REQUEST, "No treat time found");

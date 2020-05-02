@@ -1,0 +1,26 @@
+.wrapper {
+	padding: 0px 40px;
+}
+
+.wrapper .title {
+	text-align: center;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+table {
+	margin-left: 10px;
+	font-size: 16px;
+}
+
+table th, td {
+	text-align: left;
+	padding: 12px;
+}
+
+table tr:nth-child(even) {
+  background-color: #95a5a6;
+}

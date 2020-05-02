@@ -22,7 +22,7 @@ public class AppointmentDAOImpl implements AppointmentDAO{
 	public List<Appointment> getByPatientId(long id) {
 		@SuppressWarnings("unchecked")
 		NativeQuery<Appointment> sqlQuery = sessionFactory.getCurrentSession()
-				.createSQLQuery("select * from Appointment as a where a.patient_id=:id and a.status='VALID'");
+				.createSQLQuery("select * from appointment as a where a.patient_id=:id and a.status='VALID'");
 		sqlQuery.setParameter("id", id);
 		sqlQuery.addEntity(Appointment.class);
 		return sqlQuery.getResultList();

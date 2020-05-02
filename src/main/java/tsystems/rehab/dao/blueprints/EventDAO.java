@@ -10,7 +10,7 @@ import tsystems.rehab.entity.Event;
 
 public interface EventDAO {
 
-	NativeQuery<?> constructQuery(int pageSize, int pageNumber, String filterName, String patientName, String startOfQuery, boolean count);
+	NativeQuery<?> constructQuery(int pageSize, int pageNumber, String filterName, String patientName, boolean count);
 	
 	void deleteNearestEvents(long appointmentId);
 	

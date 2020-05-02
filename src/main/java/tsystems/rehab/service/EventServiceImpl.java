@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.UncategorizedJmsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,47 +41,57 @@ import tsystems.rehab.service.blueprints.EventService;
 @Transactional
 public class EventServiceImpl implements EventService{
 	
-	@Autowired
 	private EventMapper mapper;
-	
-	@Autowired
 	private EventDAO eventDAO;
+	private Producer producer;
+	
+	private static final String FLAG_UPDATE = "UPDATE";
+	private static final String FLAG_CREATE = "CREATE";
+	private static final String FLAG_DELETE = "DELETE";
+	
+	private static final String STATUS_SCHEDULED = "SCHEDULED";
+	private static final String STATUS_COMPLETED = "COMPLETED";
+	private static final String STATUS_CANCELLED = "CANCELLED";
 	
 	@Autowired
-	private Producer producer;
+	public EventServiceImpl(EventMapper mapper,
+			EventDAO eventDAO,
+			Producer producer) {
+		this.mapper = mapper;
+		this.eventDAO = eventDAO;
+		this.producer = producer;
+	}
 
 	@Override
-	public void generateEvents(AppointmentDto appnt, int duration, 
-			List<Integer> days, List<String> treatTime, boolean startsNextWeek){
-		
+	public void generateEvents(AppointmentDto appnt, int duration, List<Integer> days, List<String> treatTime,
+			boolean startsNextWeek) {
+
 		List<EventDto> listOfEvents = new ArrayList<>();
-		
-		//Field that will help us to get first day of week
+
+		// Field that will help us to get first day of week
 		TemporalField field = WeekFields.of(Locale.FRANCE).dayOfWeek();
-		
-		//Date to prevent generating events in past
+
+		// Date to prevent generating events in past
 		LocalDateTime today = LocalDateTime.now();
-		
-		//Equals Monday 00:00
-		LocalDateTime startOfDefaultWeek = appnt.getCreated_at().toInstant()
-				.atZone(ZoneId.systemDefault())
+
+		// Equals Monday 00:00
+		LocalDateTime startOfDefaultWeek = appnt.getCreatedAt().toInstant().atZone(ZoneId.systemDefault())
 				.toLocalDate().with(field, 1).atStartOfDay();
-		
+
 		if (startsNextWeek) {
 			startOfDefaultWeek = startOfDefaultWeek.plusWeeks(1);
 		}
-		
+
 		for (int i = 0; i < duration; i++) {
 			LocalDateTime startOfNextWeek = startOfDefaultWeek.plusWeeks(i);
 			for (Integer d : days) {
 				for (String time : treatTime) {
 					LocalTime eventTime = LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
-					LocalDateTime eventDateTime = startOfNextWeek.plusDays(d).withHour(eventTime.getHour()).withMinute(eventTime.getMinute());
-					if(today.compareTo(eventDateTime)<0) {
-						EventDto event = EventDto.builder()
-								.date(Timestamp.valueOf(eventDateTime))
-								.appointment(appnt)
-								.status("SCHEDULED").build();
+					LocalDateTime eventDateTime = startOfNextWeek.plusDays(d).withHour(eventTime.getHour())
+							.withMinute(eventTime.getMinute());
+					if (today.compareTo(eventDateTime) < 0) {
+						EventDto event = EventDto.builder().date(Timestamp.valueOf(eventDateTime)).appointment(appnt)
+								.status(STATUS_SCHEDULED).build();
 						listOfEvents.add(event);
 					}
 				}
@@ -88,7 +99,7 @@ public class EventServiceImpl implements EventService{
 		}
 		List<Event> newEvents = listOfEvents.stream().map(event -> mapper.toEntity(event)).collect(Collectors.toList());
 		eventDAO.saveEvents(newEvents);
-		updateInfotable(newEvents, "CREATE");
+		updateInfotable(newEvents, FLAG_CREATE);
 	}
 
 	@Override
@@ -100,33 +111,32 @@ public class EventServiceImpl implements EventService{
 	public void deleteNearestElements(Long appointmentId) {
 		List<Event> deletedEvents = eventDAO.getNearestEvents(appointmentId);
 		eventDAO.deleteNearestEvents(appointmentId);
-		updateInfotable(deletedEvents, "DELETE");
+		updateInfotable(deletedEvents, FLAG_DELETE);
 	}
-
+	
 	@Override
 	public void changeTimesPattern(AppointmentDto appointment, List<String> newTreatTime) {
 		LocalDateTime nearestDate = getNearestDate(appointment.getId());
 		TemporalField field = WeekFields.of(Locale.FRANCE).dayOfWeek();
 		LocalDateTime startOfDefaultWeek = nearestDate.toLocalDate().with(field, 1).atStartOfDay();
 		LocalDateTime dueDate = appointment.getDueDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-		
+
 		deleteNearestElements(appointment.getId());
-		
-		List<EventDto> listOfEvents = new ArrayList<EventDto>();
-		
+
+		List<EventDto> listOfEvents = new ArrayList<>();
+
 		Pattern pattern = Pattern.compile(" ");
 		List<Integer> days = pattern.splitAsStream(appointment.getPattern()).map(Integer::valueOf)
-                .collect(Collectors.toList());
-		while(startOfDefaultWeek.compareTo(dueDate)<0) {
+				.collect(Collectors.toList());
+		while (startOfDefaultWeek.compareTo(dueDate) < 0) {
 			for (Integer d : days) {
 				for (String time : newTreatTime) {
 					LocalTime eventTime = LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
-					LocalDateTime eventDateTime = startOfDefaultWeek.plusDays(d).withHour(eventTime.getHour()).withMinute(eventTime.getMinute());
-					if (eventDateTime.compareTo(LocalDateTime.now())>0) {
-						EventDto event = EventDto.builder()
-								.date(Timestamp.valueOf(eventDateTime))
-								.appointment(appointment)
-								.status("SCHEDULED").build();
+					LocalDateTime eventDateTime = startOfDefaultWeek.plusDays(d).withHour(eventTime.getHour())
+							.withMinute(eventTime.getMinute());
+					if (eventDateTime.compareTo(LocalDateTime.now()) > 0) {
+						EventDto event = EventDto.builder().date(Timestamp.valueOf(eventDateTime))
+								.appointment(appointment).status(STATUS_SCHEDULED).build();
 						listOfEvents.add(event);
 					}
 				}
@@ -135,22 +145,21 @@ public class EventServiceImpl implements EventService{
 		}
 		List<Event> newEvents = listOfEvents.stream().map(event -> mapper.toEntity(event)).collect(Collectors.toList());
 		eventDAO.saveEvents(newEvents);
-		updateInfotable(newEvents, "CREATE");
+		updateInfotable(newEvents, FLAG_CREATE);
 	}
 	
 	@Override
 	public void changeDosage(long appointmentId) {
 		List<Event> events = eventDAO.getByAppointmentId(appointmentId);
-		updateInfotable(events, "UPDATE");
+		updateInfotable(events, FLAG_UPDATE);
 	}
 	
 	@Override
 	public List<EventTableDto> getEventsForToday() {
 		List<Event> events = eventDAO.getEventsForToday();
 		ModelMapper modelMapper = new ModelMapper();
-		List<EventTableDto> tableEvents = events.stream().map(event -> modelMapper.map(event, EventTableDto.class))
+		return events.stream().map(event -> modelMapper.map(event, EventTableDto.class))
 				.collect(Collectors.toList());
-		return tableEvents;
 	}
 
 	@Override
@@ -162,14 +171,14 @@ public class EventServiceImpl implements EventService{
 	public void cancelByAppointmentId(Long appointmentId) {
 		eventDAO.cancelByAppointmentId(appointmentId);
 		List<Event> events = eventDAO.getByAppointmentId(appointmentId);
-		updateInfotable(events, "UPDATE");
+		updateInfotable(events, FLAG_UPDATE);
 	}
 	
 	@Override
 	public void cancelByPatientId(long patientId) {
 		eventDAO.cancelByPatientId(patientId);
 		List<Event> events = eventDAO.getByPatientId(patientId);
-		updateInfotable(events, "UPDATE");
+		updateInfotable(events, FLAG_UPDATE);
 	}
 
 	@Override
@@ -178,7 +187,7 @@ public class EventServiceImpl implements EventService{
 		List<EventDto> listOfEvents = 
 				eventDAO.getAllFiltered(pageSize, pageNumber, filterName, patientName)
 					.stream().map(event -> mapper.toDto(event)).collect(Collectors.toList());
-		HashMap<String, Object> responseMap = new HashMap<String, Object>();
+		HashMap<String, Object> responseMap = new HashMap<>();
 		responseMap.put("length", totalCount);
 		responseMap.put("items", listOfEvents);
 		return responseMap;
@@ -187,20 +196,23 @@ public class EventServiceImpl implements EventService{
 	@Override
 	public void completeEvent(long id) {
 		Event event = eventDAO.getById(id);
-		//EventDto event = mapper.toDto(eventDAO.getById(id));
-		event.setStatus("COMPLETED");
+		event.setStatus(STATUS_COMPLETED);
 		eventDAO.saveEvent(event);
-		updateInfotable(new ArrayList<Event>(Arrays.asList(event)), "UPDATE");
+		updateInfotable(new ArrayList<Event>(Arrays.asList(event)), FLAG_UPDATE);
 	}
 
 	@Override
 	public void cancelEvent(long id, String commentary) {
-		//EventDto event = mapper.toDto(eventDAO.getById(id));
 		Event event = eventDAO.getById(id);
 		event.setCommentary(commentary);
-		event.setStatus("CANCELLED");
+		event.setStatus(STATUS_CANCELLED);
 		eventDAO.saveEvent(event);
-		updateInfotable(new ArrayList<Event>(Arrays.asList(event)), "UPDATE");
+		updateInfotable(new ArrayList<Event>(Arrays.asList(event)), FLAG_UPDATE);
+	}
+	
+	@Override
+	public EventDto getById(long id) {
+		return mapper.toDto(eventDAO.getById(id));
 	}
 
 	@Override
@@ -220,15 +232,21 @@ public class EventServiceImpl implements EventService{
 		Date endOfDay = Timestamp.valueOf(LocalDate.now().atStartOfDay().plusHours(24));
 		Date startOfDay = Timestamp.valueOf(LocalDate.now().atStartOfDay());
 		tableEvents = tableEvents.stream()
-				.filter(event -> event.getDate().compareTo(startOfDay)>0 && event.getDate().compareTo(endOfDay)<0)
+				.filter(event -> event.getDate().compareTo(startOfDay) > 0 && event.getDate().compareTo(endOfDay) < 0)
 				.collect(Collectors.toList());
 		if (!tableEvents.isEmpty()) {
 			try {
 				InfotableDto infotable = InfotableDto.builder().flag(flag).events(tableEvents).build();
 				producer.sendMessage("main-to-table.queue", new ObjectMapper().writeValueAsString(infotable));
-			} catch (JsonProcessingException e) {
+			} catch (UncategorizedJmsException | JsonProcessingException e) {
+				
 			}
 		}
+	}
+
+	@Override
+	public void saveEvent(EventDto event) {
+		eventDAO.saveEvent(mapper.toEntity(event));
 	}
 
 }

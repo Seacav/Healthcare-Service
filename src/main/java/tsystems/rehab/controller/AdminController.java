@@ -48,15 +48,21 @@ public class AdminController {
 		return "admin/treatment-form";
 	}
 	
+	@GetMapping("/listUsers")
+	public String listUsers(Model model) {
+		model.addAttribute("users", userService.getUsers());
+		return "admin/user-list";
+	}
+	
 	@PostMapping("/register")
-	public String registerNewUser(@ModelAttribute UserDto user) {
+	public String registerNewUser(@ModelAttribute("user") UserDto user) {
 		logger.info("Registering "+user.getUsername());
 		userService.registerNewUser(user);
 		return "redirect:/admin/";
 	}
 	
 	@PostMapping("/addTreatment")
-	public String addNewTreatment(@ModelAttribute TreatmentDto treatment) {
+	public String addNewTreatment(@ModelAttribute("treatment") TreatmentDto treatment) {
 		logger.info("Adding new treatment "+treatment.toString());
 		treatmentService.addNewTreatment(treatment);
 		return "redirect:/admin/";

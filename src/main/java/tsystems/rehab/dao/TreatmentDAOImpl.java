@@ -14,8 +14,12 @@ import tsystems.rehab.entity.Treatment;
 @Repository
 public class TreatmentDAOImpl implements TreatmentDAO{
 	
-	@Autowired
 	private SessionFactory sessionFactory;
+	
+	@Autowired
+	public TreatmentDAOImpl(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
 
 	@Override
 	public List<Treatment> findByTypeAndName(String type, String name) {
@@ -35,7 +39,7 @@ public class TreatmentDAOImpl implements TreatmentDAO{
 				.createSQLQuery("select * from treatment as t where t.id=:id")
 				.addEntity(Treatment.class)
 				.setParameter("id", id);
-		return (Treatment) sqlQuery.getSingleResult();
+		return sqlQuery.getSingleResult();
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package tsystems.rehab.controller;
 
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +36,7 @@ public class EventController {
 	
 	@GetMapping(value="/listAllEvents", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public HashMap<String, Object> listAll(@RequestParam("pageNumber") int pageNumber,
+	public Map<String, Object> listAll(@RequestParam("pageNumber") int pageNumber,
 			@RequestParam("pageSize") int pageSize,
 			@RequestParam(value="filterName", defaultValue="") String filterName,
 			@RequestParam(value="patientName", defaultValue="") String patientName){
@@ -46,9 +47,9 @@ public class EventController {
 	
 	@GetMapping(value="/getCommentary", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public HashMap<String, Object> listAll(@RequestParam("eventId") int eventId){
+	public Map<String, Object> listAll(@RequestParam("eventId") int eventId){
 		logger.info("GET /getCommentary?eventId={}", eventId);
-		HashMap<String, Object> responseMap = new HashMap<String, Object>();
+		HashMap<String, Object> responseMap = new HashMap<>();
 		responseMap.put("commentary", eventService.getCommentary(eventId));
 		return responseMap;
 	}

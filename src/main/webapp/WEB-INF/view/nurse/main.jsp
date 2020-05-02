@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="_csrf" content="${_csrf.token}"/>
     <meta name="_csrf_header" content="${_csrf.headerName}"/>
-    <title>Document</title>
+    <title>Events</title>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="<c:url value="/resources/static/js/pagination.js"/>"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>  

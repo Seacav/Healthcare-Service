@@ -6,10 +6,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,37 +33,40 @@ public class EventDAOImpl implements EventDAO{
 
 	@Override
 	public List<Event> getAllFiltered(int pageSize, int pageNumber, String filterName, String patientName) {
-		String query = "select event.* from event ";
 		@SuppressWarnings("unchecked")
-		NativeQuery<Event> sqlQuery = constructQuery(pageSize, pageNumber, filterName, patientName, query, false);
+		NativeQuery<Event> sqlQuery = (NativeQuery<Event>) constructQuery(pageSize, pageNumber, filterName, patientName, false);
 		return sqlQuery.getResultList();
 	}
 	
 	@Override
 	public BigInteger getTotalNumberOfEvents(int pageSize, int pageNumber, String filterName, String patientName) {
-		String query = "select count(event.id) from event ";
 		@SuppressWarnings("unchecked")
-		NativeQuery<BigInteger> sqlQuery = constructQuery(pageSize, pageNumber, filterName, patientName, query, true);
+		NativeQuery<BigInteger> sqlQuery = (NativeQuery<BigInteger>) constructQuery(pageSize, pageNumber, filterName, patientName, true);
 		return sqlQuery.getSingleResult();
 	}
 	
 	//Constructs query either for getting filtered events or total number of events
 	@Override
-	@SuppressWarnings("rawtypes")
-	public NativeQuery constructQuery(int pageSize, int pageNumber, String filterName, 
-			String patientName, String startOfQuery, boolean count) {
-		String limit = "";
-		if (!count)
-			limit = "limit :offset, :limit";
-		NativeQuery sqlQuery = sessionFactory.getCurrentSession()
-				.createSQLQuery(startOfQuery + 
+	public NativeQuery<?> constructQuery(int pageSize, int pageNumber, String filterName, 
+			String patientName, boolean count) {
+		NativeQuery<?> sqlQuery;
+		if (count) {
+			sqlQuery = sessionFactory.getCurrentSession()
+				.createSQLQuery("select count(event.id) from event " + 
 						"inner join appointment on event.appointment_id=appointment.id " + 
 						"inner join patient on appointment.patient_id=patient.id " + 
 						"where appointment.status='VALID' and patient.last_name like :name and event.date < :endTime " + 
-						"and event.date > :startTime order by event.date asc " + limit)
-				.setParameter("name", "%"+patientName+"%");				
-		
-		if (!count) {
+						"and event.date > :startTime")
+				.setParameter("name", "%"+patientName+"%");
+		} else {
+			sqlQuery = sessionFactory.getCurrentSession() 
+				.createSQLQuery("select event.* from event " + 
+						"inner join appointment on event.appointment_id=appointment.id " + 
+						"inner join patient on appointment.patient_id=patient.id " + 
+						"where appointment.status='VALID' and patient.last_name like :name and event.date < :endTime " + 
+						"and event.date > :startTime order by event.date asc "
+						+ "limit :offset, :limit")
+				.setParameter("name", "%"+patientName+"%");
 			sqlQuery.addEntity(Event.class);
 			int offset = (pageNumber==1) ? 0 : pageSize*(pageNumber-1);
 			sqlQuery.setParameter("offset", offset);
@@ -153,12 +157,12 @@ public class EventDAOImpl implements EventDAO{
 	
 	@Override
 	public void cancelByPatientId(long patientId) {
-		@SuppressWarnings("rawtypes")
-		NativeQuery sqlQuery = sessionFactory.getCurrentSession()
-				.createSQLQuery("update event as e inner join appointment as a "
-						+ "on e.appointment_id=a.id "
-						+ "set e.status='CANCELLED' "
-						+ "where a.patient_id=:id");
+		NativeQuery<?> sqlQuery = sessionFactory.getCurrentSession()
+				.createSQLQuery("update event " +
+						"set event.status='CANCELLED' "
+						+ "where event.appointment_id in ("
+						+ "select a.id from appointment as a "
+						+ "where a.patient_id=:id)");
 		sqlQuery.setParameter("id", patientId);
 		sqlQuery.executeUpdate();
 	}
@@ -193,8 +197,6 @@ public class EventDAOImpl implements EventDAO{
 				.setParameter("id", appointmentId);
 		return sqlQuery.getSingleResult();
 	}
-	
-	
 	
 	@Override
 	public void saveEvent(Event event) {

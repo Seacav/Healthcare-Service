@@ -27,7 +27,7 @@
 	</form:form>
 	<c:forEach items="${appnt}" var="appnt">
 		<a href="<c:url value="list-appointments/show?appointmentId=${appnt.id}"/>"
-				>${appnt.treatment.type} ${appnt.treatment.name} ${appnt.created_at}</a>
+				>${appnt.treatment.type} ${appnt.treatment.name} ${appnt.createdAt}</a>
 	</c:forEach>
 	<a id="addAppnt" href="<c:url value="addAppointment?patientId=${patient.id}"/>">
 		<i class="fas fa-calendar-plus"></i> Add new appointment</a>

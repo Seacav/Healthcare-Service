@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import tsystems.rehab.controller.AppointmentController;
 import tsystems.rehab.dto.EventTableDto;
 import tsystems.rehab.dto.InfotableDto;
 import tsystems.rehab.service.blueprints.EventService;
@@ -32,7 +31,7 @@ public class Listener {
 	private EventService eventService;
 	
 	@JmsListener(destination="table-to-main.queue")
-	public void receiveMessage(Message message) throws JMSException, JsonProcessingException{
+	public void receiveMessage(Message message) throws JsonProcessingException, JMSException{
 		logger.info("MainApp Received message {}", message);
 		if (message instanceof TextMessage) {
 			TextMessage msg = (TextMessage) message;

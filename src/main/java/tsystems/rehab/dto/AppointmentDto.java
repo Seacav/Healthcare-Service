@@ -20,7 +20,7 @@ public class AppointmentDto {
 	private String receiptTimes;
 	private String dosage;
 	private String status;
-	private Date created_at;
+	private Date createdAt;
 	private Date dueDate;
 
 }

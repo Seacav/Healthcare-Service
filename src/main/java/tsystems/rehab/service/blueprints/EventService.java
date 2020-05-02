@@ -36,8 +36,12 @@ public interface EventService {
 	
 	void cancelEvent(long id, String commentary);
 	
+	void saveEvent(EventDto event);
+	
 	String getCommentary(long id);
 	
 	BigInteger getNumberOfActiveEvents(long id);
+
+	EventDto getById(long id);
 	
 }

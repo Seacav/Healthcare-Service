@@ -96,9 +96,8 @@ public class AppointmentController {
 	public String showAppointmentForm(@RequestParam("patientId") Long id,
 			@RequestParam("treatmentId") Long treatmentId, 
 			@RequestParam("isDrug") boolean isDrug, Model model) {
-		EventGeneratorDto eventGenerator = new EventGeneratorDto();
-		eventGenerator.setPatientId(id);
-		eventGenerator.setTreatmentId(treatmentId);
+		EventGeneratorDto eventGenerator = EventGeneratorDto
+				.builder().patientId(id).treatmentId(treatmentId).build();
 		model.addAttribute("eventGenerator", eventGenerator);
 		model.addAttribute("isDrug", isDrug);
 		return "appnt/appnt-form";
