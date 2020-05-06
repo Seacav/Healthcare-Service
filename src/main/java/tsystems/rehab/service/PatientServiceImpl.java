@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,14 +21,21 @@ import tsystems.rehab.service.blueprints.PatientService;
 @Transactional
 public class PatientServiceImpl implements PatientService{
 
-	@Autowired
 	private PatientDAO patientDAO;
-	
-	@Autowired
 	private PatientMapper mapper;
+	private AppointmentService appointmentService;
+	
+	private static final String STATUS_TREATED = "TREATED";
+	private static final String STATUS_DISCHARGED = "DISCHARGED";
 	
 	@Autowired
-	private AppointmentService appointmentService;
+	public PatientServiceImpl(PatientDAO patientDAO,
+			PatientMapper mapper,
+			@Lazy AppointmentService appointmentService) {
+		this.patientDAO = patientDAO;
+		this.mapper = mapper;
+		this.appointmentService = appointmentService;
+	}
 
 	@Override
 	public void save(PatientDto patient) {
@@ -57,26 +65,26 @@ public class PatientServiceImpl implements PatientService{
 	@Override
 	public void addExistingPatient(long patientId, String diagnosis, String doctorName) {
 		PatientDto patient = get(patientId);
-		if (patient.getStatus().equals("TREATED")) {
+		if (patient.getStatus().equals(STATUS_TREATED)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Patient already assigned");
 		}
 		patient.setDoctorName(doctorName);
 		patient.setDiagnosis(diagnosis);
-		patient.setStatus("TREATED");
+		patient.setStatus(STATUS_TREATED);
 		save(patient);
 	}
 
 	@Override
 	public void dischargePatient(long patientId) {
 		PatientDto patient = get(patientId);
-		patient.setStatus("DISCHARGED");
+		patient.setStatus(STATUS_DISCHARGED);
 		save(patient);
 		appointmentService.cancelByPatientId(patientId);
 	}
 
 	@Override
 	public void processPatientForm(PatientDto patient, String doctorName) {
-		patient.setStatus("TREATED");
+		patient.setStatus(STATUS_TREATED);
 		patient.setDoctorName(doctorName);
 		save(patient);
 	}

@@ -27,3 +27,18 @@
 #patient-form .input-container {
 	margin: 20px 0px;
 }
+
+#patient-form input[type=submit] {
+	padding: 5px;
+	font-size: 14px;
+	border-radius: 7px;
+	background-color: #f5f6fa;
+	border: #079992 2px solid;
+}
+
+#patient-form input[type=submit]:hover {
+	cursor: pointer;
+	color: white;
+	background-color: #079992;
+	transition: 0.3s;
+}

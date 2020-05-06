@@ -24,7 +24,7 @@
 	<div class="title">
 		<h2>Register new user</h2>
 	</div>
-	<form:form action="register" modelAttribute="user" class="registration-form" method="POST">
+	<form:form id="regForm" action="register" modelAttribute="user" class="registration-form" method="POST">
 		<div class="input-container">
 			<span>Username: </span><form:input path="username"/>
 		</div>
@@ -43,8 +43,9 @@
 		<div class="input-container">
 			<span>Password: </span><form:input type="password" path="password"/>
 		</div>
-		<input type="submit" value="Submit"/>
+		<input type="submit" id="subBtn" value="Submit"/>
 	</form:form>
+	<script src="<c:url value="/resources/static/js/admin/registrationFormScript.js"/>"></script>
 </div>
 <div class="footer">
 	<a>Some info here</a>

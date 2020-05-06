@@ -1,27 +1,83 @@
+#firstColumn {
+	display: inline-block;
+	width: 45%;
+}
+
 .wrapper h2 {
 	text-align: center;
 }
 
-.wrapper a {
+#firstColumn a, .patientName {
 	display: block;
 	text-decoration: none;
 	color: black;
 	margin-left: 15px;
 	margin-bottom: 25px;
 	padding: 6px;
-	width: 30%;
+	width: 90%;
 	border-radius: 5px;
 	font-size: 16px;
 	background-color: #dcdde1;
 }
 
-.wrapper a:hover {
+#firstColumn .patientName {
+	border: none;
+	text-align: left;
+}
+
+#firstColumn .patientName:hover {
 	background-color: #079992;
 	color: #f5f6fa;
 	transition: 0.3s;
 	cursor: pointer;
 }
 
-.wrapper #addPatient {
-	width: 15%;
+#firstColumn .patientName:focus {
+	background-color: #079992;
+	color: #f5f6fa;
 }
+
+#firstColumn a:hover {
+	background-color: #079992;
+	color: #f5f6fa;
+	transition: 0.3s;
+	cursor: pointer;
+}
+
+#firstColumn #addPatient {
+	width: 40%;
+}
+
+#secondColumn {
+	display: none;
+	vertical-align: top;
+	width: 49%;
+	background: #079992;
+	padding: 10px;
+	color: #f5f6fa;
+	border-radius: 5px;
+}
+
+#secondColumn p {
+	margin: 10px;
+}
+
+#secondColumn a {
+	text-decoration: none;
+	color: #f5f6fa;
+	float: right;
+	margin: 5px;
+}
+
+#secondColumn a:hover {
+	cursor: pointer;
+	color: #bdc3c7;
+}
+
+
+
+
+
+
+
+

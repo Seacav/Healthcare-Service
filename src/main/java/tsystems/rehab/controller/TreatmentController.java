@@ -23,7 +23,6 @@ public class TreatmentController {
 			@ModelAttribute("treatmentName") String name, 
 			@ModelAttribute("patientId") Long id, Model model) {
 		List<TreatmentDto> listOfTreatments = treatmentService.findByTypeAndName(type, name);
-		//boolean searchSuccess = (listOfTreatments.isEmpty() || Objects.isNull(listOfTreatments)) ? false : true;
 		model.addAttribute("treatments", listOfTreatments);
 		model.addAttribute("searchSuccess", !listOfTreatments.isEmpty());
 		model.addAttribute("patientId", id);

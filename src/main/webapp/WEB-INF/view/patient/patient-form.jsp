@@ -23,7 +23,6 @@
 <div class="wrapper">
 	<h2>Patient form</h2>
 	<form:form action="process-form" modelAttribute="patient" method="POST" id="patient-form">
-		<form:hidden path="id"/>
 		<div class="input-container">
 			<span>First name: </span><form:input path="firstName"/>
 		</div>
@@ -36,8 +35,9 @@
 		<div class="input-container">
 			<span>Diagnosis: </span><form:input path="diagnosis"/>
 		</div>
-		<input type="submit" value="Submit"/>
+		<input type="submit" id="subBtn" value="Submit"/>
 	</form:form>
+	<script src="<c:url value="/resources/static/js/patientFormScript.js"/>"></script>
 </div>
 <div class="footer">
 	<a>Some info here</a>

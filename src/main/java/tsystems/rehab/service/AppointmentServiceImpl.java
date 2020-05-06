@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import tsystems.rehab.dao.blueprints.AppointmentDAO;
 import tsystems.rehab.dto.AppointmentDto;
 import tsystems.rehab.dto.EventGeneratorDto;
+import tsystems.rehab.dto.PatientDto;
 import tsystems.rehab.mapper.AppointmentMapper;
 import tsystems.rehab.service.blueprints.AppointmentService;
 import tsystems.rehab.service.blueprints.EventService;
@@ -55,7 +56,13 @@ public class AppointmentServiceImpl implements AppointmentService{
 	}
 
 	@Override
-	public List<AppointmentDto> getByPatientId(long id) {
+	public List<AppointmentDto> getByPatientId(long id, String doctorName) {
+		PatientDto patient = patientService.get(id);
+		if (patient == null || !patient.getDoctorName().equals(doctorName)
+				|| patient.getStatus().equals("DISCHARGED")) {
+			throw new ResponseStatusException(
+			          HttpStatus.FORBIDDEN, "Access forbidden");
+		}
 		return appointmentDAO.getByPatientId(id).stream().map(appnt -> mapper.toDto(appnt)).collect(Collectors.toList());
 	}
 	

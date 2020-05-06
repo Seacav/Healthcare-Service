@@ -16,15 +16,12 @@ promise = promise
 	return data.json()
 });
 	
-console.log(showDsgModal);
-
 // Listeners for dosage modal box
 if (showDsgModal !== null) {
 	//Code to check active(i.e. scheduled) events in appointment. If there are no active events then
 	//change dosage button will not be shown
 	promise
 	.then(res=>{
-		console.log(res);
 		if (res===0){
 			showDsgModal.style.display = 'none';
 		} else {

@@ -82,13 +82,6 @@
 			<tr>
 				<td>${event.date }</td>
 				<td>${event.status }</td>
-				<!-- 
-				<td>
-					<form:form action="deleteEvent?id=${event.id}" method="POST">
-						<button type="submit" class="deleteEvent"><i class="fa fa-trash"></i></button>
-					</form:form>
-				</td>
-				 -->
 			</tr>
 		</c:forEach>
 	</table>
@@ -99,14 +92,5 @@
 <script src="<c:url value="/resources/static/js/showAppntScript.js"/>"></script>
 </body>
 <script>
-var appnt = {
-		id:"${appnt.id}",
-		treatment:
-			{
-			id: "${appnt.treatment.id}",
-			type: "${appnt.treatment.type}",
-			name: "${appnt.treatment.name}"
-			}
-}
 </script>
 </html>

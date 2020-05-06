@@ -29,3 +29,27 @@
 	font-size: 14px;
 	margin-left: 15px;
 }
+
+.wrapper select {
+    border-radius: 5px;
+	border: 2px #079992 solid;
+	padding: 5px;
+	font-size: 14px;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+.wrapper #submit-button {
+	padding: 5px;
+	font-size: 14px;
+	border-radius: 7px;
+	background-color: #f5f6fa;
+	border: #079992 2px solid;
+}
+
+.wrapper #submit-button:hover {
+	cursor: pointer;
+	background-color: #079992;
+	color: white;
+	transition: 0.3s;
+}

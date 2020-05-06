@@ -2,11 +2,12 @@ package tsystems.rehab.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.hibernate.SessionFactory;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -33,10 +35,14 @@ import tsystems.rehab.service.blueprints.AppointmentService;
 @TestMethodOrder(OrderAnnotation.class)
 @Transactional
 @Rollback(true)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class AppointmentServiceImplTest {
 	
 	@Autowired
 	private AppointmentService appointmentService;
+	
+	@Autowired
+	private SessionFactory sessionFactory;
 	
 	private static EventGeneratorDto eventGenerator;
 
@@ -58,17 +64,17 @@ class AppointmentServiceImplTest {
 	@Rollback(false)
 	void testProcessAppointmentForm() {
 		appointmentService.processAppointmentForm(eventGenerator);
-		List<AppointmentDto> appointments = appointmentService.getByPatientId(1L);
+		List<AppointmentDto> appointments = appointmentService.getByPatientId(1L,"ivanova_i");
 		assertEquals("Acetaminophen", appointments.get(0).getTreatment().getName());
 	}
 	
 	@Test
 	@Order(2)
 	void testGetByPatientId() {
-		List<AppointmentDto> appointments = appointmentService.getByPatientId(1L);
+		List<AppointmentDto> appointments = appointmentService.getByPatientId(1L, "ivanova_i");
 		assertEquals("Acetaminophen", appointments.get(0).getTreatment().getName());
-		appointments = appointmentService.getByPatientId(2L);
-		assertTrue(appointments.isEmpty());
+		assertThrows(ResponseStatusException.class,
+				() -> appointmentService.getByPatientId(2L, "ivanova_i"));
 	}
 	
 	@Test
@@ -98,6 +104,6 @@ class AppointmentServiceImplTest {
 	void testCancelAppointment() {
 		appointmentService.cancelAppointment(1L);
 		assertEquals("INVALID", appointmentService.getById(1L).getStatus());
+		sessionFactory.close();
 	}
-
 }

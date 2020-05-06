@@ -29,7 +29,7 @@
 			<option value="DRUG">Drug</option>
 			<option value="PROCEDURE">Procedure</option>
 		</select>
-		<input type="submit" value="Search" id="submit-button"/>
+		<button type="submit" id="submit-button"><i class="fas fa-search"></i> Search</button>
 	</form:form>
 	<c:if test="${!empty searchSuccess }">
 		<c:choose>

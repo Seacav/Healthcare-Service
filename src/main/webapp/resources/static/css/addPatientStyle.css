@@ -12,3 +12,18 @@
 	padding: 5px;
 	font-size: 14px;
 }
+
+.wrapper #submit-button {
+	padding: 5px;
+	font-size: 14px;
+	border-radius: 7px;
+	background-color: #f5f6fa;
+	border: #079992 2px solid;
+}
+
+.wrapper #submit-button:hover:enabled {
+	cursor: pointer;
+	color: white;
+	background-color: #079992;
+	transition: 0.3s;
+}

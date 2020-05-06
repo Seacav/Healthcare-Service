@@ -22,18 +22,28 @@
 </div>
 <div class="wrapper">
 	<h2>List of your patients</h2>
-	<c:if test="${!empty patients}">
-		<c:forEach items="${patients}" var="patient">
-			<a href="<c:url value="list-appointments?id=${patient.id}"/>">
-			   <i class="fas fa-hospital-user"></i> ${patient.firstName} ${patient.lastName}
-			</a>
-		</c:forEach>
-	</c:if>
-	
-	<a id="addPatient" href="<c:url value="add-patient"/>"><i class="fas fa-plus-circle"></i> Add new patient</a>
+	<div id="firstColumn">
+		<c:if test="${!empty patients}">
+			<c:forEach items="${patients}" var="patient">
+				<!-- 
+				<a href="<c:url value="list-appointments?id=${patient.id}"/>">
+				   <i class="fas fa-hospital-user"></i> ${patient.firstName} ${patient.lastName}
+				</a>
+				 -->
+				 <button class="patientName" onclick=renderInfo(${patient.id})>
+				 	<i class="fas fa-hospital-user"></i> ${patient.firstName} ${patient.lastName}
+				 </button>
+			</c:forEach>
+		</c:if>
+		
+		<a id="addPatient" href="<c:url value="add-patient"/>"><i class="fas fa-plus-circle"></i> Add new patient</a>
+	</div>
+	<div id="secondColumn">
+	</div>
 </div>
 <div class="footer">
 	<a>Some info here</a>
 </div>
+<script src="<c:url value="/resources/static/js/listPatientsScript.js"/>"></script>
 </body>
 </html>

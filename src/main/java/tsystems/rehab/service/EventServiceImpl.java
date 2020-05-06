@@ -18,15 +18,20 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.jms.UncategorizedJmsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import tsystems.rehab.dao.EventDAOImpl;
 import tsystems.rehab.dao.blueprints.EventDAO;
 import tsystems.rehab.dto.AppointmentDto;
 import tsystems.rehab.dto.EventDto;
@@ -52,6 +57,8 @@ public class EventServiceImpl implements EventService{
 	private static final String STATUS_SCHEDULED = "SCHEDULED";
 	private static final String STATUS_COMPLETED = "COMPLETED";
 	private static final String STATUS_CANCELLED = "CANCELLED";
+	
+	private static Logger logger = LogManager.getLogger(EventServiceImpl.class.getName());
 	
 	@Autowired
 	public EventServiceImpl(EventMapper mapper,
@@ -196,6 +203,10 @@ public class EventServiceImpl implements EventService{
 	@Override
 	public void completeEvent(long id) {
 		Event event = eventDAO.getById(id);
+		if (!event.getStatus().equals(STATUS_SCHEDULED)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+					"Event already completed or cancelled");
+		}
 		event.setStatus(STATUS_COMPLETED);
 		eventDAO.saveEvent(event);
 		updateInfotable(new ArrayList<Event>(Arrays.asList(event)), FLAG_UPDATE);
@@ -204,6 +215,10 @@ public class EventServiceImpl implements EventService{
 	@Override
 	public void cancelEvent(long id, String commentary) {
 		Event event = eventDAO.getById(id);
+		if (!event.getStatus().equals(STATUS_SCHEDULED)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+					"Event already cancelled or completed");
+		}
 		event.setCommentary(commentary);
 		event.setStatus(STATUS_CANCELLED);
 		eventDAO.saveEvent(event);
@@ -239,7 +254,7 @@ public class EventServiceImpl implements EventService{
 				InfotableDto infotable = InfotableDto.builder().flag(flag).events(tableEvents).build();
 				producer.sendMessage("main-to-table.queue", new ObjectMapper().writeValueAsString(infotable));
 			} catch (UncategorizedJmsException | JsonProcessingException e) {
-				
+				logger.error("Error occured during processing JMS message. {}", e.getMessage());
 			}
 		}
 	}

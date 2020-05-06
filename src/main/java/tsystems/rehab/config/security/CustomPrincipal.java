@@ -24,7 +24,7 @@ public class CustomPrincipal implements UserDetails{
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		Set<GrantedAuthority> grntAuth = new HashSet<GrantedAuthority>();
+		Set<GrantedAuthority> grntAuth = new HashSet<>();
 		if (user!=null) {
 			String role = user.getRole();
 			grntAuth.add(new SimpleGrantedAuthority(role));

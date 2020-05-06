@@ -31,9 +31,6 @@
 	</c:if>
 	<c:if test="${!empty patient}">
 		<p>Patient does exist!</p>
-		<!-- Show patient info -->
-		<!-- if his status == 'discharged' then show href to method addExisitingPatient-->
-		<!-- if his status == 'treated' then show 'Sorry, can't add patient, he already has therapist'-->
 		<p>${patient.firstName} ${patient.lastName}</p>
 		<p>Insurance number: ${patient.insNumber}</p>
 		<c:choose>

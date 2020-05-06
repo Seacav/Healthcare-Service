@@ -7,7 +7,7 @@ import tsystems.rehab.dto.EventGeneratorDto;
 
 public interface AppointmentService {
 	
-	List<AppointmentDto> getByPatientId(long id);
+	List<AppointmentDto> getByPatientId(long id, String doctorName);
 	
 	void cancelByPatientId(long id);
 	

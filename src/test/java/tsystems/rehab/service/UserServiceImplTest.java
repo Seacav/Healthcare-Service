@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -26,6 +27,7 @@ import tsystems.rehab.service.blueprints.UserService;
 @WebAppConfiguration
 @TestMethodOrder(OrderAnnotation.class)
 @Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class UserServiceImplTest {
 	
 	@Autowired

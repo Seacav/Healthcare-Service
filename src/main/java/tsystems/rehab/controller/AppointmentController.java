@@ -1,5 +1,6 @@
 package tsystems.rehab.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -69,9 +70,9 @@ public class AppointmentController {
 	}
 	
 	@GetMapping("/doctor/list-appointments")
-	public String listAppointments(@RequestParam("id") long id, Model model) {
+	public String listAppointments(@RequestParam("id") long id, Model model, Principal principal) {
+		model.addAttribute("appnt", appointmentService.getByPatientId(id, principal.getName()));
 		model.addAttribute("patient", patientService.get(id));
-		model.addAttribute("appnt", appointmentService.getByPatientId(id));
 		return "appnt/list-appnt";
 	}
 

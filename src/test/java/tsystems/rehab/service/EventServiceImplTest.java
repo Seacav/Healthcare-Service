@@ -2,7 +2,6 @@ package tsystems.rehab.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -11,6 +10,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -18,8 +19,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +42,7 @@ import tsystems.rehab.service.blueprints.EventService;
 @TestMethodOrder(OrderAnnotation.class)
 @Transactional
 @Rollback(true)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class EventServiceImplTest {
 	
 	@Autowired
@@ -47,8 +51,7 @@ class EventServiceImplTest {
 	@Autowired
 	private AppointmentService appointmentService;
 	
-	@Autowired
-	private EventDAO eventDAO;
+	private static Logger logger = LogManager.getLogger(EventServiceImplTest.class.getName());
 	
 	private static EventGeneratorDto eventGenerator;
 	private static EventGeneratorDto eventGeneratorSecond;
@@ -84,11 +87,12 @@ class EventServiceImplTest {
 	@Rollback(false)
 	@Order(1)
 	void testEventService() {
+		
 		//Generates 4 events and appointment with id=1
 		appointmentService.processAppointmentForm(eventGenerator);
 		firstAppointment = appointmentService.getById(1L);
 		assertNotNull(firstAppointment);
-		
+
 		//Generates 8 events and appointment with id=2
 		appointmentService.processAppointmentForm(eventGeneratorSecond);
 		secondAppointment = appointmentService.getById(2L);
@@ -106,10 +110,10 @@ class EventServiceImplTest {
 	@Test
 	@Order(3)
 	void testGetAll() {
-		HashMap<String, Object> events = eventService.getAll(10, 1, "", "Smith");
+		HashMap<String, Object> events = eventService.getAll(20, 1, "", "Smith");
 		assertEquals(BigInteger.valueOf(12L), events.get("length"));
 		List<EventDto> eventsList = (List<EventDto>) events.get("items");
-		assertEquals(10, eventsList.size());
+		assertEquals(12, eventsList.size());
 	}
 	
 	@Test

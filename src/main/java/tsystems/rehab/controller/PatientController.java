@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import tsystems.rehab.dto.PatientDto;
 import tsystems.rehab.service.blueprints.PatientService;
@@ -24,6 +26,8 @@ import tsystems.rehab.service.blueprints.PatientService;
 public class PatientController {
 	
 	private static Logger logger = LogManager.getLogger(PatientController.class.getName());
+	
+	private static final String REDIRECT_MAIN = "redirect:/doctor/";
 	
 	@Autowired
 	private PatientService patientService;
@@ -60,13 +64,13 @@ public class PatientController {
 			Principal principal) {
 		logger.info("POST /addExistingPatient?id={}", id);
 		patientService.addExistingPatient(id, diagnosis, principal.getName());
-		return "redirect:/doctor/";
+		return REDIRECT_MAIN;
 	}
 	
 	@PostMapping("/dischargePatient")
 	public String dischargePatient(@RequestParam("patientId") long id) {
 		patientService.dischargePatient(id);
-		return "redirect:/doctor/";
+		return REDIRECT_MAIN;
 	}
 	
 	@PostMapping("/process-form")
@@ -76,6 +80,12 @@ public class PatientController {
 			return "patient/patient-form";
 		}
 		patientService.processPatientForm(patient, principal.getName());
-		return "redirect:/doctor/";
+		return REDIRECT_MAIN;
+	}
+	
+	@GetMapping(value="/getPatient", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public PatientDto getPatient(@RequestParam long id) {
+		return patientService.get(id);
 	}
 }

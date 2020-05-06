@@ -29,6 +29,9 @@ public class EventDAOImpl implements EventDAO{
 	@Autowired
 	private SessionFactory sessionFactory;
 	
+	private static final String TIME_START = "startTime";
+	private static final String TIME_END = "endTime";
+	
 	private static Logger logger = LogManager.getLogger(EventDAOImpl.class);
 
 	@Override
@@ -77,14 +80,14 @@ public class EventDAOImpl implements EventDAO{
 		LocalDateTime currentTime = LocalDateTime.now();
 		
 		if (filterName.equals("hour")) {
-			sqlQuery.setParameter("endTime", Timestamp.valueOf(currentTime.withMinute(0).withSecond(0).withNano(0).plusHours(1)));
-			sqlQuery.setParameter("startTime", Timestamp.valueOf(currentTime.withMinute(0).withSecond(0).withNano(0)));
+			sqlQuery.setParameter(TIME_END, Timestamp.valueOf(currentTime.withMinute(0).withSecond(0).withNano(0).plusHours(1)));
+			sqlQuery.setParameter(TIME_START, Timestamp.valueOf(currentTime.withMinute(0).withSecond(0).withNano(0)));
 		} else if (filterName.equals("today")) {
-			sqlQuery.setParameter("endTime", Timestamp.valueOf(LocalDate.now().atStartOfDay().plusHours(24)));
-			sqlQuery.setParameter("startTime", Timestamp.valueOf(LocalDate.now().atStartOfDay()));
+			sqlQuery.setParameter(TIME_END, Timestamp.valueOf(LocalDate.now().atStartOfDay().plusHours(24)));
+			sqlQuery.setParameter(TIME_START, Timestamp.valueOf(LocalDate.now().atStartOfDay()));
 		} else {
-			sqlQuery.setParameter("endTime", Timestamp.valueOf(LocalDate.now().atStartOfDay().plusWeeks(4)));
-			sqlQuery.setParameter("startTime", Timestamp.valueOf(LocalDate.now().with(field, 1).atStartOfDay()));
+			sqlQuery.setParameter(TIME_END, Timestamp.valueOf(LocalDate.now().atStartOfDay().plusWeeks(4)));
+			sqlQuery.setParameter(TIME_START, Timestamp.valueOf(LocalDate.now().with(field, 1).atStartOfDay()));
 		}
 		return sqlQuery;
 	}
@@ -101,8 +104,7 @@ public class EventDAOImpl implements EventDAO{
 	
 	@Override
 	public void deleteNearestEvents(long appointmentId) {
-		@SuppressWarnings("rawtypes")
-		NativeQuery sqlQuery = sessionFactory.getCurrentSession()
+		NativeQuery<?> sqlQuery = sessionFactory.getCurrentSession()
 				.createSQLQuery("delete from event as e where e.appointment_id=:id and e.status='SCHEDULED'");
 		sqlQuery.setParameter("id", appointmentId);
 		sqlQuery.executeUpdate();
@@ -115,8 +117,8 @@ public class EventDAOImpl implements EventDAO{
 				.createSQLQuery("select event.* from event inner join appointment on event.appointment_id=appointment.id"
 						+ " where appointment.status='VALID' and event.date < :endTime and event.date > :startTime")
 				.addEntity(Event.class);
-		sqlQuery.setParameter("endTime", Timestamp.valueOf(LocalDate.now().atStartOfDay().plusHours(24)));
-		sqlQuery.setParameter("startTime", Timestamp.valueOf(LocalDate.now().atStartOfDay()));
+		sqlQuery.setParameter(TIME_END, Timestamp.valueOf(LocalDate.now().atStartOfDay().plusHours(24)));
+		sqlQuery.setParameter(TIME_START, Timestamp.valueOf(LocalDate.now().atStartOfDay()));
 		return sqlQuery.getResultList();
 	}
 
@@ -132,8 +134,7 @@ public class EventDAOImpl implements EventDAO{
 	
 	@Override
 	public void cancelByAppointmentId(long appointmentId) {
-		@SuppressWarnings("rawtypes")
-		NativeQuery sqlQuery = sessionFactory.getCurrentSession()
+		NativeQuery<?> sqlQuery = sessionFactory.getCurrentSession()
 				.createSQLQuery("update event as e set e.status='CANCELLED' "
 						+ "where e.appointment_id=:id and e.status='SCHEDULED'");
 		sqlQuery.setParameter("id", appointmentId);
@@ -150,8 +151,8 @@ public class EventDAOImpl implements EventDAO{
 						"a.patient_id=:id and e.date < :endTime and e.date > :startTime")
 				.addEntity(Event.class)
 				.setParameter("id", patientId);
-		sqlQuery.setParameter("endTime", Timestamp.valueOf(LocalDate.now().atStartOfDay().plusHours(24)));
-		sqlQuery.setParameter("startTime", Timestamp.valueOf(LocalDate.now().atStartOfDay()));
+		sqlQuery.setParameter(TIME_END, Timestamp.valueOf(LocalDate.now().atStartOfDay().plusHours(24)));
+		sqlQuery.setParameter(TIME_START, Timestamp.valueOf(LocalDate.now().atStartOfDay()));
 		return sqlQuery.getResultList();
 	}
 	
@@ -180,8 +181,7 @@ public class EventDAOImpl implements EventDAO{
 
 	@Override
 	public Date getNearestDate(long appointmentId) {
-		@SuppressWarnings("rawtypes")
-		NativeQuery sqlQuery = sessionFactory.getCurrentSession()
+		NativeQuery<?> sqlQuery = sessionFactory.getCurrentSession()
 				.createSQLQuery("select date from event as e "
 						+ "where e.appointment_id=:id and e.status='SCHEDULED' and current_timestamp()<e.date "
 						+ "order by e.date limit 1");

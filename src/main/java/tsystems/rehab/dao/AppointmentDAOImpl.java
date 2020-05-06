@@ -30,8 +30,7 @@ public class AppointmentDAOImpl implements AppointmentDAO{
 	
 	@Override
 	public void cancelByPatientId(long id) {
-		@SuppressWarnings("rawtypes")
-		NativeQuery sqlQuery = sessionFactory.getCurrentSession()
+		NativeQuery<?> sqlQuery = sessionFactory.getCurrentSession()
 				.createSQLQuery("update appointment as a set a.status='INVALID' "
 						+ "where a.patient_id=:id and a.status='VALID'");
 		sqlQuery.setParameter("id", id);
